@@ -1,7 +1,8 @@
 #include "boxpackingsolver.h"
 
-BoxPackingSolver::BoxPackingSolver()
+
+
+QString BoxPackingSolver::getLog() const
 {
-
+    return log;
 }
-

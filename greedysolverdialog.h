@@ -13,6 +13,8 @@ class GreedySolverDialog : public QDialog
 
 public:
     explicit GreedySolverDialog(QWidget *parent = 0);
+    int getCriteria()const;
+    bool getRotateBoxesValue()const;
     ~GreedySolverDialog();
 
 private slots:

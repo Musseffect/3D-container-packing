@@ -26,8 +26,8 @@ QWidget *BoxTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
         ColorDialogWidget *editor=new ColorDialogWidget(index,parent);
         editor->resize(140,140);
         return editor;
-    }else
-        QStyledItemDelegate::createEditor(parent, option, index);
+    }
+    QStyledItemDelegate::createEditor(parent, option, index);
 }
 void BoxTableDelegate::paint(QPainter*painter,const QStyleOptionViewItem& option,const QModelIndex& index)const
 {

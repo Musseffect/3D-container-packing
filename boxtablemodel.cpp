@@ -3,18 +3,18 @@
 
 BoxTableModel::BoxTableModel(QObject *parent): QAbstractTableModel(parent)
 {
-    boxes.push_back(Box{1,3,5,QColor(255,0,0)});
-    boxes.push_back(Box{2,2.5,4,QColor(255,255,255)});
-    boxes.push_back(Box{3,2,3,QColor(255,255,0)});
-    boxes.push_back(Box{1,4,1,QColor(255,0,255)});
-    boxes.push_back(Box{3,3,3,QColor(0,255,255)});
-    boxes.push_back(Box{5,2,3,QColor(0,255,0)});
-    boxes.push_back(Box{3,1,5,QColor(0,0,255)});
-   /* boxes.push_back(Box{1,1,1,QColor(255,0,0)});
-    boxes.push_back(Box{2,2,2,QColor(255,255,255)});
-    boxes.push_back(Box{3,3,3,QColor(255,255,0)});
-    boxes.push_back(Box{4,4,4,QColor(255,0,255)});
-    boxes.push_back(Box{5,5,5,QColor(0,0,255)});*/
+    boxes.push_back(Box(1,3,5,QColor(255,0,0)));
+    boxes.push_back(Box(2,2.5,4,QColor(255,255,255)));
+    boxes.push_back(Box(3,2,3,QColor(255,255,0)));
+    boxes.push_back(Box(1,4,1,QColor(255,0,255)));
+    boxes.push_back(Box(3,3,3,QColor(0,255,255)));
+    boxes.push_back(Box(5,2,3,QColor(0,255,0)));
+    boxes.push_back(Box(3,1,5,QColor(0,0,255)));
+   /* boxes.push_back(Box(1,1,1,QColor(255,0,0)));
+    boxes.push_back(Box(2,2,2,QColor(255,255,255)));
+    boxes.push_back(Box(3,3,3,QColor(255,255,0)));
+    boxes.push_back(Box(4,4,4,QColor(255,0,255)));
+    boxes.push_back(Box(5,5,5,QColor(0,0,255)));*/
 }
 QVariant BoxTableModel::data(const QModelIndex &index, int role)const
 {
@@ -29,16 +29,16 @@ QVariant BoxTableModel::data(const QModelIndex &index, int role)const
 
         switch (index.column()) {
             case 0:
-                return box.w;
+                return box.width();
 
             case 1:
-                return box.h;
+                return box.height();
 
             case 2:
-                return box.l;
+                return box.length();
 
             case 3:
-                return box.color;
+                return box.color();
         }
     }
     return QVariant();
@@ -91,16 +91,16 @@ bool BoxTableModel::setData(const QModelIndex & index, const QVariant & value, i
         switch(index.column())
         {
             case 0:
-            boxes[index.row()].w=value.toFloat();
+            boxes[index.row()].width()=value.toFloat();
                 break;
             case 1:
-            boxes[index.row()].h=value.toFloat();
+            boxes[index.row()].height()=value.toFloat();
                 break;
             case 2:
-            boxes[index.row()].l=value.toFloat();
+            boxes[index.row()].length()=value.toFloat();
                 break;
             case 3:
-            boxes[index.row()].color=value.value<QColor>();
+            boxes[index.row()].color()=value.value<QColor>();
                 break;
             default:
                 return false;
@@ -128,7 +128,7 @@ bool BoxTableModel::insertRows(int row, int count, const QModelIndex&)
     beginInsertRows(QModelIndex(), row, row + count - 1);
     for (int i = 0; i < count; ++i)
     {
-        boxes.insert(row,Box{1.0,1.0,1.0,QColor(Random::random(255),Random::random(255),Random::random(255),255)});
+        boxes.insert(row,Box(1.0,1.0,1.0,QColor(Random::random(255),Random::random(255),Random::random(255),255)));
     }
     endInsertRows();
     return true;

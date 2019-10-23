@@ -24,7 +24,10 @@ SOURCES += main.cpp\
     boxtablemodel.cpp \
     boxtabledelegate.cpp \
     colordialogwidget.cpp \
-    greedysolverdialog.cpp
+    greedysolverdialog.cpp \
+    greedysolver.cpp \
+    geneticsolver.cpp \
+    boxpackingsolver.cpp
 
 HEADERS  += window.h \
     boxscene.h \
@@ -37,7 +40,10 @@ HEADERS  += window.h \
     structs.h \
     boxtabledelegate.h \
     colordialogwidget.h \
-    greedysolverdialog.h
+    greedysolverdialog.h \
+    greedysolver.h \
+    geneticsolver.h \
+    boxpackingsolver.h
 
 FORMS    += window.ui \
     solutionui.ui \

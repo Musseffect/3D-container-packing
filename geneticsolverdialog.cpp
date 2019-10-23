@@ -42,6 +42,21 @@ float GeneticSolverDialog::getCrossingoverCount()const
     return ui->crossingoverCount->value();
 }
 
+bool GeneticSolverDialog::getRotateBoxesValue() const
+{
+    return ui->rotateBoxes->isChecked();
+}
+
+int GeneticSolverDialog::getRepairAttempts() const
+{
+    return ui->repairAttempts->value();
+}
+
+bool GeneticSolverDialog::getCompressBoxesValue() const
+{
+    return ui->boxCompression->isChecked();
+}
+
 void GeneticSolverDialog::on_populationSpinBox_valueChanged(int arg1)
 {
     ui->selectionSpinBox->setMaximum(arg1);

@@ -21,6 +21,9 @@ public:
     float getMutationProb()const;
     float getRequiredVolume()const;
     float getCrossingoverCount()const;
+    bool getRotateBoxesValue()const;
+    int getRepairAttempts()const;
+    bool getCompressBoxesValue()const;
 
 private slots:
     void on_populationSpinBox_valueChanged(int arg1);

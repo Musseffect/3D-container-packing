@@ -8,6 +8,16 @@ GreedySolverDialog::GreedySolverDialog(QWidget *parent) :
     ui->setupUi(this);
 }
 
+int GreedySolverDialog::getCriteria() const
+{
+    return ui->comboBox->currentIndex();
+}
+
+bool GreedySolverDialog::getRotateBoxesValue() const
+{
+    return ui->rotateBoxes->isChecked();
+}
+
 GreedySolverDialog::~GreedySolverDialog()
 {
     delete ui;
@@ -22,3 +32,4 @@ void GreedySolverDialog::on_buttonBox_rejected()
 {
     reject();
 }
+

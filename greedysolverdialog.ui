@@ -6,66 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>357</width>
+    <height>155</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Параметры жадного алгоритма</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Критерий жадности</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="comboBox">
-       <item>
-        <property name="text">
-         <string>Расстояние от нуля до максимальной точки огибающего контейнера</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Евклидово расстояние от максимальной точки поставленного блока до края контейнера</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Хеммингово расстояние от максимальной точки поставленного блока до края контейнера</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Расстояние Чебышева от максимальной точки поставленного блока до края контейнера</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Ближайшая точка, куда можно поставить контейнер</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Отношение объёма огибающего контейнера к максимальному объёму</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <item row="2" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -74,6 +32,95 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
+   </item>
+   <item row="1" column="0">
+    <layout class="QFormLayout" name="formLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <property name="rowWrapPolicy">
+      <enum>QFormLayout::WrapAllRows</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Критерий жадности</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="comboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <item>
+        <property name="text">
+         <string>Евклидова норма крайней точки поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Манхеттенова норма крайней точки поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Чебышева норма до крайней точки поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Объём огибающего параллелепипеда для поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Евклидова норма до крайней точки текущего блока в контейнере</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Манхеттенова норма до крайней точки текущего блока в контейнере</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Чебышева норма до крайней точки текущего блока в контейнере</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Максимальный по объёму блок на ближайшей позиции к началу</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="rotateBoxes">
+       <property name="text">
+        <string>Поворачивать блоки</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
