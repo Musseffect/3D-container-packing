@@ -4,7 +4,6 @@
 
 #ifdef SOLVERSOLD
 
-
 QVector<BoxInfo> solveGreedy(QVector<Box>& boxes, Box& bounds, int criteria,bool rotateBoxes, QString &log)
 {
     //empty maximal spaces

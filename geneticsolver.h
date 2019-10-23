@@ -59,19 +59,19 @@ void reduction(Chromosome& c,const float wProb,const float hProb,const bool rota
 void selection(QList<Chromosome>& solutions, QList<float>& objectiveValues, float boundsVolume, int selectionCount);
 void mutation(Chromosome& c);
 void inversion(Chromosome& c);
-void crossingover(QList<Chromosome>& solutions,QList<float>& objectiveValues,const QList<int>& crossingoverIndexes,
+void crossingover(QList<Chromosome>& solutions, QList<float>& objectiveValues, const QList<int>& crossingoverIndexes,
                   const QVector<bool>& genePool,
                   const QVector<Box>& boxes,
                   const Box& bounds,
                   const int population,
                   const int chromosomeLength,
-                  const int boxCount);
+                  const int boxCount, const bool tightPacking);
 bool xCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 bool yCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 bool zCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 
-float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound);
-QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes);
+float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound,const bool tightPacking);
+QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes,const bool tightPacking);
 
 void recompute(QList<emsstruct>* emsList,float minx,float maxx,float miny,float maxy,float minz,float maxz);
 void reduceEMS(QList<emsstruct>* emsList);

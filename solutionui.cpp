@@ -39,19 +39,15 @@ void solutionUI::setup(QVector<BoxInfo> &placements, QVector<Box> &boxes,Box bou
         boxStruct.b=box.color().blue();
         boxArray.push_back(boxStruct);
 
-
         QString item;
         QTextStream stream(&item);
-        stream<<iter->boxID<<". "<<"center: ("<<boxStruct->cx-0.5*boxStruct->sx
-             <<','<<boxStruct->cy-0.5*boxStruct->sy<<','<<
-                boxStruct->cz-0.5*boxStruct->sz
-             <<") sizes: ("<<boxStruct->sx<<","<<boxStruct->sy<<","<<boxStruct->sz<<")";
+        stream<<iter->boxID<<". "<<"center: ("<<boxStruct.cx-0.5*boxStruct.sx
+             <<','<<boxStruct.cy-0.5*boxStruct.sy<<','<<
+                boxStruct.cz-0.5*boxStruct.sz
+             <<") sizes: ("<<boxStruct.sx<<","<<boxStruct.sy<<","<<boxStruct.sz<<")";
         stream<<" Orientation: "<<orientationToString(iter->o);
         ui->listWidget->addItem(item);
     }
-    /*boxArray.push_back(BoxArrayStruct{0,0,0,1,2,3,255,0,0});
-    boxArray.push_back(BoxArrayStruct{2,2,3,1,2,3,0,255,0});
-    boxArray.push_back(BoxArrayStruct{6,6,6,1,2,3,0,0,255});*/
 
     ui->openGLWidget->init(boxArray,bounds);
     //initList(boxArray);
@@ -85,14 +81,17 @@ void solutionUI::on_freeCamera_clicked()
 void solutionUI::on_oxy_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OXY);
+    ui->openGLWidget->update();
 }
 
 void solutionUI::on_oxz_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OXZ);
+    ui->openGLWidget->update();
 }
 
 void solutionUI::on_ozy_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OZY);
+    ui->openGLWidget->update();
 }

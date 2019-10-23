@@ -1,6 +1,7 @@
 #ifndef STRUCTS
 #define STRUCTS
 #include <QColor>
+#include <QString>
 
 enum BoxOrientation
 {
@@ -16,19 +17,7 @@ static BoxOrientation orientations[6]={BoxOrientation::XYZ0,BoxOrientation::XZY1
                               BoxOrientation::YXZ2,BoxOrientation::YZX3,
                               BoxOrientation::ZXY4,BoxOrientation::ZYX5};
 
-QString orientationToString(BoxOrientation o)
-{
-    switch(o)
-    {
-        case:
-        case:
-        case:
-        case:
-        case:
-        case:
-
-    }
-}
+QString orientationToString(BoxOrientation o);
 
 
 class Box

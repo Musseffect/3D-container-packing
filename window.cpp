@@ -60,6 +60,8 @@ void Window::on_test_render_action_triggered()
     QVector<Box> boxes=model->getBoxes().toVector();
     Box bounds=getBounds();
     //2 3 -3 1 6 -3 4 -1 -2 5 0 -1 -3
+    //packing test without rotations
+    //5 4 -2 0 6 1 3 -3 2 -1 -2 -1 -3
     solutionUI* solutionWindow=new solutionUI(this);
     solutionWindow->show();
     solutionWindow->setup(placements,boxes,bounds);

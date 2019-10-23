@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     greedysolverdialog.cpp \
     greedysolver.cpp \
     geneticsolver.cpp \
-    boxpackingsolver.cpp
+    boxpackingsolver.cpp \
+    structs.cpp
 
 HEADERS  += window.h \
     boxscene.h \

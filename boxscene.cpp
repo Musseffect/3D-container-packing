@@ -6,6 +6,7 @@
 #include <QOpenGLContext>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLFunctions_3_3_Core>
+#include <QDebug>
 
 void BoxScene::initializeGL()
 {
@@ -336,6 +337,8 @@ void BoxScene::init(QVector<BoxArrayStruct>& boxArray,Box bounds)
 
          boxes.append(box);
      }
+     qDebug()<<"Dimensions: "<<maxx<<", "<<maxy<<", "<<maxz;
+     qDebug()<<"volume: "<<maxx*maxy*maxz;
      envelope.translate(maxx*0.5,maxy*0.5,maxz*0.5);
      envelope.scale(maxx*0.5,maxy*0.5,maxz*0.5);
      perspCamera.setCenter(QVector3D(maxx*0.5,maxy*0.5,maxz*0.5));
