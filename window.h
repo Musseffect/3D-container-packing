@@ -30,6 +30,8 @@ private slots:
 
     void on_genetic_action_triggered();
     void onSelectionChange(const QItemSelection & selected, const QItemSelection &deselected);
+    void on_help_action_triggered();
+
 private:
     Box getBounds();
     Ui::Window *ui;

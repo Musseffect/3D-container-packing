@@ -171,3 +171,8 @@ void Window::on_removeBoxButton_clicked()
         model->removeRows(iter->top(),iter->top()-iter->bottom()+1,QModelIndex());
     }
 }
+
+void Window::on_help_action_triggered()
+{
+
+}

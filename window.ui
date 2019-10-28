@@ -195,6 +195,7 @@
     <property name="title">
      <string>Помощь</string>
     </property>
+    <addaction name="help_action"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -222,6 +223,11 @@
   <action name="test_render_action">
    <property name="text">
     <string>Test box render</string>
+   </property>
+  </action>
+  <action name="help_action">
+   <property name="text">
+    <string>Помощь</string>
    </property>
   </action>
  </widget>
