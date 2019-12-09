@@ -3,6 +3,7 @@
 #include "structs.h"
 #include <QVector>
 #include <QString>
+#include <QObject>
 
 struct emsstruct{
     float minx;
@@ -14,13 +15,17 @@ struct emsstruct{
 };
 
 
-class BoxPackingSolver
+class BoxPackingSolver:public QObject
 {
+    Q_OBJECT
 protected:
     QString log;
 public:
+
     virtual QVector<BoxInfo> solve(const QVector<Box>& boxes,const Box& bounds) = 0;
     QString getLog()const;
+signals:
+    void progress(int value);
 };
 
 #endif // BOXPACKINGSOLVER_H

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QHelpCollectionProject version="1.0">
+    <assistant>
+        <title>Simple Text Viewer</title>
+        <applicationIcon>images/main.jpg</applicationIcon>
+        <cacheDirectory>QtProject/SimpleTextViewer</cacheDirectory>
+        <startPage>qthelp://org.qt.boxpacking/doc/index.html</startPage>
+        <aboutMenuText>
+            <text>About Simple Text Viewer</text>
+        </aboutMenuText>
+        <aboutDialog>
+            <file>about.txt</file>
+            <icon>images/icon.png</icon>
+        </aboutDialog>
+        <enableDocumentationManager>false</enableDocumentationManager>
+        <enableAddressBar>false</enableAddressBar>
+        <enableFilterFunctionality>false</enableFilterFunctionality>
+    </assistant>
+    <docFiles>
+        <generate>
+            <file>
+                <input>boxpacking.qhp</input>
+                <output>boxpacking.qch</output>
+                </file>
+            </generate>
+        <register>
+            <file>boxpacking.qch</file>
+            </register>
+        </docFiles>
+    </QHelpCollectionProject>

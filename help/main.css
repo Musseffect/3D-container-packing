@@ -1,0 +1,46 @@
+
+.image {
+    position:relative;
+    display:inline-block;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+
+@font-face {
+    font-family: "Computer Modern";
+    src: url('./fonts/cmunss.otf');
+  }
+  @font-face {
+    font-family: "Computer Modern";
+    src: url('./fonts/cmunsx.otf');
+    font-weight: bold;
+  }
+  @font-face {
+    font-family: "Computer Modern";
+    src: url('./fonts/cmunsi.otf');
+    font-style: italic, oblique;
+  }
+  @font-face {
+    font-family: "Computer Modern";
+    src: url('./fonts/cmunbxo.otf');
+    font-weight: bold;
+    font-style: italic, oblique;
+  }
+@font-face {
+    font-family: "Computer Modern Math";
+    src: url('./fonts/cmmi12.ttf');
+    font-style: italic,oblique;
+}
+  .latex{
+    font-family: "Computer Modern", sans-serif;
+  }
+
+.latex_math, .lm {
+    font-size:18px;
+    font-family: "Computer Modern Math", sans-serif;
+}

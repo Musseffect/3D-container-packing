@@ -62,23 +62,24 @@ QVariant BoxTableModel::headerData(int section, Qt::Orientation orientation, int
     if (orientation == Qt::Horizontal) {
         switch (section) {
             case 0:
-                return tr("Ширина");
+                return tr("w");
 
             case 1:
-                return tr("Высота");
+                return tr("h");
 
             case 2:
-                return tr("Длина");
+                return tr("l");
 
             case 3:
-                return tr("Цвет блока");
+                return tr("Цвет");
 
             default:
                 return QVariant();
         }
     }else
     {
-        return QString::number(section);
+        //нумерация с единицы
+        return QString::number(section+1);
     }
     return QVariant();
 }
@@ -140,4 +141,11 @@ bool BoxTableModel::removeRows(int row, int count, const QModelIndex&)
         boxes.removeAt(row);
     endRemoveRows();
     return true;
+}
+
+void BoxTableModel::reset(QList<Box> &boxes)
+{
+    beginResetModel();
+    this->boxes=boxes;
+    endResetModel();
 }

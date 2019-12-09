@@ -7,23 +7,51 @@ solutionUI::solutionUI(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->openGLWidget->setCameraType(CameraType::FreeCamera);
+    model=new BoxPlacementTableModel(this);
+    ui->boxPlacementView->setModel(model);
+    connect(
+        ui->boxPlacementView->selectionModel(),
+        SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+        this,
+        SLOT(onSelectionChange(const QItemSelection &, const QItemSelection &)));
+    ui->boxPlacementView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    connect(ui->openGLWidget,
+            SIGNAL(updateDistance(float)),
+            this,
+            SLOT(updateSlider(float)));
+}
+void solutionUI::onSelectionChange(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    QItemSelection selection=ui->boxPlacementView->selectionModel()->selection();
+    QVector<int> indexes;
+    for(auto iter=selection.begin();iter!=selection.end();iter++)
+    {
+        //qDebug()<<"bottom-top"<<iter->bottom()<<iter->top();
+        //model->removeRows(iter->bottom(),1,QModelIndex());
+        for(int j=iter->bottom();j<=iter->top();j++)
+        {
+            indexes.push_back(j);
+        }
+    }
+    ui->openGLWidget->select(indexes);
 }
 
 solutionUI::~solutionUI()
 {
     delete ui;
+    delete model;
 }
 bool lessThanPlacement(const BoxInfo &s1, const BoxInfo &s2)
 {
     return s1.boxID < s2.boxID;
 }
 
-void solutionUI::setup(QVector<BoxInfo> &placements, QVector<Box> &boxes,Box bounds)
+void solutionUI::setup(QVector<BoxInfo> &placements, const QVector<Box> &boxes,const Box bounds)
 {
     QVector<BoxArrayStruct> boxArray;
     qSort(placements.begin(),placements.end(),lessThanPlacement);
 
-    ui->listWidget->clear();
+    QList<BoxPlacementStruct> data;
     for(auto iter=placements.begin();iter!=placements.end();++iter)
     {
         BoxArrayStruct boxStruct;
@@ -39,35 +67,14 @@ void solutionUI::setup(QVector<BoxInfo> &placements, QVector<Box> &boxes,Box bou
         boxStruct.b=box.color().blue();
         boxArray.push_back(boxStruct);
 
-        QString item;
-        QTextStream stream(&item);
-        stream<<iter->boxID<<". "<<"center: ("<<boxStruct.cx-0.5*boxStruct.sx
-             <<','<<boxStruct.cy-0.5*boxStruct.sy<<','<<
-                boxStruct.cz-0.5*boxStruct.sz
-             <<") sizes: ("<<boxStruct.sx<<","<<boxStruct.sy<<","<<boxStruct.sz<<")";
-        stream<<" Orientation: "<<orientationToString(iter->o);
-        ui->listWidget->addItem(item);
+        data.append(BoxPlacementStruct{box.w,box.h,box.l,
+                    box.color(),iter->x,iter->y,iter->z});
     }
 
+    model->init(data);
     ui->openGLWidget->init(boxArray,bounds);
-    //initList(boxArray);
 }
 
-void solutionUI::initList(QVector<BoxArrayStruct>& boxArray)
-{
-    ui->listWidget->clear();
-    int index=0;
-    for(QVector<BoxArrayStruct>::iterator iter=boxArray.begin();iter!=boxArray.end();++iter)
-    {
-        QString item;
-        QTextStream stream(&item);
-        stream<<index<<". "<<"center: ("<<iter->cx-0.5*iter->sx<<','<<iter->cy-0.5*iter->sy<<','<<
-                iter->cz-0.5*iter->sz
-             <<") sizes: ("<<iter->sx<<","<<iter->sy<<","<<iter->sz<<")";
-        ui->listWidget->addItem(item);
-        index++;
-    }
-}
 void solutionUI::setLog(QString logText)
 {
     ui->logTextEdit->setPlainText(logText);
@@ -76,6 +83,7 @@ void solutionUI::setLog(QString logText)
 void solutionUI::on_freeCamera_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::FreeCamera);
+    ui->openGLWidget->update();
 }
 
 void solutionUI::on_oxy_clicked()
@@ -94,4 +102,14 @@ void solutionUI::on_ozy_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OZY);
     ui->openGLWidget->update();
+}
+
+void solutionUI::on_horizontalSlider_valueChanged(int value)
+{
+    ui->openGLWidget->setDistance(value/100.f);
+}
+
+void solutionUI::updateSlider(float distance)
+{
+    ui->horizontalSlider->setValue(distance*100);
 }

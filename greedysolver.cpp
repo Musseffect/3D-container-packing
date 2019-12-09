@@ -1,6 +1,7 @@
 #include "greedysolver.h"
 #include <QStack>
 
+#include <time.h>
 
 
 GreedySolver::GreedySolver():rotateBoxes(false),greedCriteria(EUCLDISTMINGLOB)
@@ -12,8 +13,11 @@ void GreedySolver::init(bool rotateBoxes, int greedCriteria)
     this->rotateBoxes=rotateBoxes;
     this->greedCriteria=greedCriteria;
 }
+//Вынесено отдельно
 QVector<BoxInfo> GreedySolver::solveMaxBoxMinPos(const QVector<Box> &boxes, const Box &bounds)
 {
+    clock_t t;
+    t = clock();
     QList<int> availableBoxes;
     for(int i=0;i<boxes.length();i++)
     {
@@ -47,6 +51,7 @@ QVector<BoxInfo> GreedySolver::solveMaxBoxMinPos(const QVector<Box> &boxes, cons
 
     while(availableBoxes.length()!=0)
     {
+       emit BoxPackingSolver::progress(100-(availableBoxes.length()*100/boxes.length()));
        int bestContainer=-1;
        int bestEMS=-1;
        BoxOrientation bestOrientation=BoxOrientation::XYZ0;
@@ -195,14 +200,19 @@ QVector<BoxInfo> GreedySolver::solveMaxBoxMinPos(const QVector<Box> &boxes, cons
        }
     }
     float volume=x*y*z;
+    t = clock()-t;
     log+="Объём: "+QString::number(volume)+".\n";
+    log+="Затраченное время: "+QString::number(qMax(((float)t)/CLOCKS_PER_SEC,0.1f))+" секунд";
     return placements;
 }
 
 QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bounds)
 {
+    //Отдельная функция для данного критерия жадности
     if(greedCriteria==MAXBOXMINPOS)
         return solveMaxBoxMinPos(boxes,bounds);
+    clock_t t;
+    t = clock();
     //empty maximal spaces
     QList<int> availableBoxes;
     for(int i=0;i<boxes.length();i++)
@@ -221,6 +231,7 @@ QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bound
 
     while(availableBoxes.length()!=0)
     {
+       emit BoxPackingSolver::progress(100-(availableBoxes.length()*100/boxes.length()));
        int bestContainer=-1;
        int bestEMS=-1;
        BoxOrientation bestOrientation=BoxOrientation::XYZ0;
@@ -274,9 +285,9 @@ QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bound
                                     envelopeZ));
                            break;
                        case VOLUMEMINGLOB:
-                       fitness=envelopeX+
-                               envelopeY+
-                               envelopeZ;
+                           fitness=envelopeX+
+                                   envelopeY+
+                                   envelopeZ;
                            break;
                        case EUCLDISTMINLOC:
                            fitness=maxx*maxx+
@@ -289,9 +300,9 @@ QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bound
                                    maxz;
                            break;
                        case CHEBDISTMINLOC:
-                       fitness=qMax(maxx,
-                               qMax(maxy,
-                               maxz));
+                           fitness=qMax(maxx,
+                                   qMax(maxy,
+                                   maxz));
                            break;
                         default:
                             Q_ASSERT(false);
@@ -418,6 +429,9 @@ QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bound
        }
     }
     float volume=x*y*z;
+    t = clock()-t;
     log+="Объём: "+QString::number(volume)+".\n";
+    log+="Затраченное время: "+QString::number(qMax(((float)t)/CLOCKS_PER_SEC,0.1f))+" секунд";
     return placements;
 }
+

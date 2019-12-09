@@ -2,6 +2,9 @@
 #define STRUCTS
 #include <QColor>
 #include <QString>
+#include <QJsonObject>
+#include <QMetaType>
+#include <QVector>
 
 enum BoxOrientation
 {
@@ -18,7 +21,7 @@ static BoxOrientation orientations[6]={BoxOrientation::XYZ0,BoxOrientation::XZY1
                               BoxOrientation::ZXY4,BoxOrientation::ZYX5};
 
 QString orientationToString(BoxOrientation o);
-
+int orientationToInteger(BoxOrientation o);
 
 class Box
 {
@@ -85,6 +88,24 @@ public:
     {
         return c;
     }
+    void read(const QJsonObject &json)
+    {
+        if (json.contains("w") && json["w"].isDouble())
+            w = json["w"].toDouble();
+        if (json.contains("h") && json["h"].isDouble())
+            h = json["h"].toDouble();
+        if (json.contains("l") && json["l"].isDouble())
+            l = json["l"].toDouble();
+        if(json.contains("color")&&json["color"].isDouble())
+            c.fromRgb(json["color"].toInt());
+    }
+    void write(QJsonObject &json)
+    {
+        json["w"] = w;
+        json["h"] = h;
+        json["l"] = l;
+        json["color"]=(double)c.rgb();
+    }
 };
 struct BoxArrayStruct
 {
@@ -106,6 +127,10 @@ struct BoxInfo
     int boxID;
     BoxOrientation o;
 };
+Q_DECLARE_METATYPE(Box);
+Q_DECLARE_METATYPE(BoxInfo);
+Q_DECLARE_METATYPE(QVector<BoxInfo>);
+Q_DECLARE_METATYPE(QVector<Box>);
 
 #endif // STRUCTS
 

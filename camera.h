@@ -7,9 +7,10 @@
 
 class Camera
 {
-public:
+protected:
     float width;
     float height;
+public:
     virtual QMatrix4x4 getView() = 0;
     virtual QMatrix4x4 getProjection() = 0;
     void setWidth(float w);
@@ -18,7 +19,6 @@ public:
 
 class SphericalCamera:public Camera
 {
-public:
     float fov;
     float nearPlane;
     float farPlane;
@@ -30,6 +30,7 @@ public:
     float distance;
     float pitch;
     float yaw;
+public:
     SphericalCamera();
     QMatrix4x4 getView();
     QMatrix4x4 getProjection();
@@ -40,17 +41,21 @@ public:
     void move(QVector2D delta);
     void setCenter(QVector3D c);
     void setDistance(float d);
+    float getDistance() const;
+    float getMinDistance() const;
+    float getMaxDistance() const;
+    float getDistanceNormalized() const;
 };
 
 class OrthoCamera:public Camera
 {
-public:
     float nearPlane;
     float farPlane;
     float zoom;
     QVector3D position;
     QVector3D direction;
     QVector3D up;
+public:
     OrthoCamera();
     void setDirection(QVector3D value);
     void setPosition(QVector3D value);

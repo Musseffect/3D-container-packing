@@ -21,3 +21,23 @@ QString orientationToString(BoxOrientation o)
     }
     return "__";
 }
+
+int orientationToInteger(BoxOrientation o)
+{
+    switch(o)
+    {
+        case XYZ0:
+        return 0;
+        case XZY1:
+        return 1;
+        case YXZ2:
+        return 2;
+        case YZX3:
+        return 3;
+        case ZXY4:
+        return 4;
+        case ZYX5:
+        return 5;
+    }
+    return -1;
+}

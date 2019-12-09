@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>692</width>
+    <width>487</width>
     <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Оптимизация размещения ящиков</string>
+   <string>Трёхмерная упаковка</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -24,7 +24,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Размеры области размещения</string>
+       <string>Размеры контейнера</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -174,16 +174,18 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>692</width>
+     <width>487</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="fileMenu">
     <property name="title">
      <string>Файл</string>
     </property>
+    <addaction name="openAction"/>
+    <addaction name="saveAction"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="solutionMenu">
     <property name="title">
      <string>Решение</string>
     </property>
@@ -191,15 +193,15 @@
     <addaction name="genetic_action"/>
     <addaction name="test_render_action"/>
    </widget>
-   <widget class="QMenu" name="menu_3">
+   <widget class="QMenu" name="helpMenu">
     <property name="title">
      <string>Помощь</string>
     </property>
     <addaction name="help_action"/>
    </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
+   <addaction name="fileMenu"/>
+   <addaction name="solutionMenu"/>
+   <addaction name="helpMenu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -228,6 +230,16 @@
   <action name="help_action">
    <property name="text">
     <string>Помощь</string>
+   </property>
+  </action>
+  <action name="openAction">
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="saveAction">
+   <property name="text">
+    <string>Сохранить</string>
    </property>
   </action>
  </widget>

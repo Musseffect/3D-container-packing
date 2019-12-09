@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>org.qt.boxpacking</namespace>
+    <virtualFolder>doc</virtualFolder>
+    <filterSection>
+        <toc>
+            <section title="3D упаковка" ref="index.html">
+                <section title="Работа с программой" ref="./program.html"></section>
+                <section title="Алгоритмы" ref="./greedy.html">
+                    <section title="Жадный" ref="./greedy.html"></section>
+                    <section title="Генетический" ref="./genetic.html"></section>
+                </section>
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="Жадный алгоритм" ref="./greedy.html"/>
+            <keyword name="Генетический алгоритм" ref="./genetic.html"/>
+        </keywords>
+        <files>
+            <file>index.html</file>
+            <file>program.html</file>
+            <file>genetic.html</file>
+            <file>greedy.html</file>
+            <file>images/main.jpg</file>
+            <file>images/results.jpg</file>
+            <file>images/geneticWindow.jpg</file>
+            <file>images/greedyWindow.jpg</file>
+            <file>main.css</file>
+        </files>
+    </filterSection>
+</QtHelpProject>

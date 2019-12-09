@@ -4,8 +4,8 @@
 
 
 SphericalCamera::SphericalCamera():center(0.0,0.0,0.0),distance(10.0),
-    fov(75.0),Camera(),nearPlane(0.01),farPlane(100.0),
-    pitch(0.0),yaw(0.0),maxDistance(100.0),minDistance(0.5)
+    fov(75.0),Camera(),nearPlane(0.01),farPlane(300.0),
+    pitch(0.0),yaw(0.0),maxDistance(200.0),minDistance(0.5)
 {
 }
 
@@ -69,6 +69,27 @@ void SphericalCamera::setDistance(float d)
     distance=qMin(maxDistance,qMax(minDistance,d));
 }
 
+float SphericalCamera::getDistance() const
+{
+   return distance;
+}
+
+float SphericalCamera::getMinDistance() const
+{
+    return minDistance;
+}
+
+float SphericalCamera::getMaxDistance() const
+{
+    return maxDistance;
+}
+
+float SphericalCamera::getDistanceNormalized() const
+{
+    return distance-minDistance/
+            (maxDistance-minDistance);
+}
+
 OrthoCamera::OrthoCamera():zoom(1.0f),nearPlane(0.01f),farPlane(1000.0f)
 {
 }
@@ -108,6 +129,6 @@ QMatrix4x4 OrthoCamera::getView()
 QMatrix4x4 OrthoCamera::getProjection()
 {
     QMatrix4x4 proj;
-    proj.ortho(0.0f,width*zoom,height*zoom,0.0f,nearPlane,farPlane);
+    proj.ortho(-zoom,zoom,-zoom,zoom,nearPlane,farPlane);
     return proj;
 }

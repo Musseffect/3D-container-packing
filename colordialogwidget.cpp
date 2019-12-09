@@ -3,7 +3,7 @@
 #include <QPainter>
 
 
-ColorDialogWidget::ColorDialogWidget(const QModelIndex &index, QWidget *parent)
+ColorDialogWidget::ColorDialogWidget(const QModelIndex &index, QWidget *parent):QToolButton(parent)
 {
     indexSource=index;
     connect(this,SIGNAL(clicked(bool)),this,SLOT(pressButton()));
@@ -31,5 +31,5 @@ void ColorDialogWidget::paintEvent(QPaintEvent *event)
 
 void ColorDialogWidget::pressButton()
 {
-    color = QColorDialog::getColor(Qt::green, this, "Выберите цвет", QColorDialog::DontUseNativeDialog);
+    color = QColorDialog::getColor(this->color, this, "Выберите цвет", QColorDialog::DontUseNativeDialog);
 }

@@ -6,12 +6,14 @@
 
 QT       += core gui
 QT += opengl
+QT += help
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 3D_PACKING
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
         window.cpp \
@@ -28,7 +30,11 @@ SOURCES += main.cpp\
     greedysolver.cpp \
     geneticsolver.cpp \
     boxpackingsolver.cpp \
-    structs.cpp
+    structs.cpp \
+    boxplacementtablemodel.cpp \
+    solverworker.cpp \
+    helpwindow.cpp \
+    helpbrowser.cpp
 
 HEADERS  += window.h \
     boxscene.h \
@@ -44,7 +50,11 @@ HEADERS  += window.h \
     greedysolverdialog.h \
     greedysolver.h \
     geneticsolver.h \
-    boxpackingsolver.h
+    boxpackingsolver.h \
+    boxplacementtablemodel.h \
+    solverworker.h \
+    helpwindow.h \
+    helpbrowser.h
 
 FORMS    += window.ui \
     solutionui.ui \
@@ -63,7 +73,9 @@ DISTFILES += \
     Shaders/colorShader.frag \
     Shaders/colorShader.vert \
     Shaders/lineColored.vert \
-    Shaders/lineColored.frag
+    Shaders/lineColored.frag \
+    Shaders/billboard.frag \
+    Shaders/billboard.vert
 
 win32 {
     build_pass: CONFIG(debug, debug|release) {
@@ -73,7 +85,7 @@ win32 {
         DESTDIR = $$OUT_PWD/release
     }
 }
-
+#QMAKE_CXXFLAGS += /std:c++11
 
 ##createdir.commands = $(MKDIR) $$OUT_PWD/Shaders
 #copydata.commands = $(COPY_DIR) $$PWD/Shaders $$OUT_PWD/Shaders

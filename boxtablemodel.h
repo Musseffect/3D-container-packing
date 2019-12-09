@@ -19,6 +19,7 @@ public:
     const QList<Box>& getBoxes()const;
     bool insertRows(int row, int count, const QModelIndex&);
     bool removeRows(int row, int count, const QModelIndex&);
+    void reset(QList<Box>& boxes);
 private:
     QList<Box> boxes;
 signals:

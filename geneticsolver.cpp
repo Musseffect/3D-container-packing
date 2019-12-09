@@ -3,6 +3,7 @@
 #include <QElapsedTimer>
 #include <QStack>
 #include "random.h"
+#include <time.h>
 #include <QDebug>
 
 //#define PACKING
@@ -41,6 +42,8 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
     //int operatorCount=boxCount-1;//количество операторов в записи обратной польской нотации
     int chromosomeLength=boxCount*2-1;//количество элементов в записи обратной польской нотации
     QElapsedTimer timer;
+    clock_t t;
+    t = clock();
     timer.start();
 
     QList<Chromosome> solutions;
@@ -69,6 +72,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
     int currentIteration=0;
     while(true)
     {
+        emit BoxPackingSolver::progress(qMax<int>(currentIteration*100/this->maxIterations,int(totalTime*100.f/this->maxTime)));
         int reductionIndex=solutions.length();
         do{
             for(int i=solutions.length();i<population;i++)
@@ -106,7 +110,9 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
                     objectiveValues.removeAt(i);
                 }
             }
-            float currentTime=timer.nsecsElapsed()/10e9;
+            float currentTime=timer.elapsed()/10e2;
+            currentTime=float(clock()-t)/CLOCKS_PER_SEC;
+            totalTime=currentTime;
             if(currentTime>maxTime)
             {
                 goto END;
@@ -140,7 +146,8 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
 
         currentIteration++;
 
-        float currentTime=timer.nsecsElapsed()/10e9;
+        float currentTime=timer.elapsed()/10e2;
+        currentTime=float(clock()-t)/CLOCKS_PER_SEC;
         if(currentTime>maxTime||currentIteration>=maxIterations||bestVolume<=requiredVolume*boundsVolume)
         {
             totalTime=currentTime;
@@ -198,12 +205,21 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
     {
         log+="Объём: "+QString::number(bestVolume)+".\n";
         log+="Решение: ";
-        for(auto iter=bestSolution.genes.begin();iter!=bestSolution.genes.end();++iter)
+        for(int i=0;i<bestSolution.genes.length();i++)
         {
-            log+=QString::number(*iter)+" ";
+            log+=QString::number(bestSolution.genes[i]);
+            if(i!=bestSolution.genes.length()-1)
+                log+=+", ";
+        }
+        log+="\nВектор ориентаций: ";
+        for(int i=0;i<bestSolution.orientations.length();i++)
+        {
+            log+=QString::number(orientationToInteger(bestSolution.orientations[i]));
+            if(i!=bestSolution.orientations.length()-1)
+                log+=+", ";
         }
         log+="\nКоличество итераций: "+QString::number(currentIteration);
-        log+="\nЗатраченное время: "+QString::number(totalTime)+" секунд";
+        log+="\nЗатраченное время: "+QString::number(qMax(totalTime,0.1f))+" секунд";
         return calculatePlacements(bestSolution,boxes,compressBoxes);
     }
     throw QString("Не удалось найти подходящее решение");

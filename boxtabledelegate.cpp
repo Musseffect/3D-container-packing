@@ -28,6 +28,7 @@ QWidget *BoxTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
         return editor;
     }
     QStyledItemDelegate::createEditor(parent, option, index);
+   // emit sizeHintChanged(index);
 }
 void BoxTableDelegate::paint(QPainter*painter,const QStyleOptionViewItem& option,const QModelIndex& index)const
 {

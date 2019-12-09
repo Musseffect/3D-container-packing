@@ -50,6 +50,7 @@ public:
               bool rotateBoxes,
               bool compressBoxes);
     virtual QVector<BoxInfo> solve(const QVector<Box>& boxes,const Box& bounds) override;
+
 };
 
 void checkSolutions(const QList<Chromosome>& solutions,int boxCount);

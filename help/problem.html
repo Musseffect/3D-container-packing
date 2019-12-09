@@ -1,0 +1,79 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;" charset="WINDOWS-1251" />
+    <link rel="stylesheet" href="main.css" />
+    <title>Описание задачи</title>
+</head>
+<body>
+    <div>
+        <p>
+            Дана область трёхмерного пространства(контейнер), имеющая
+            форму параллелепипеда с шириной, длиной и высотой.
+        </p>
+        <p>Дано множество блоков, также имеющих форму параллелепипеда.</p>
+        <p>
+            Для каждого блока определены его размеры.
+        </p>
+        <p>
+            Требуется рассчитать точное положение блоков в заданной
+            области таким образом, чтобы заполнение области
+            было допустимым и эффективным.
+        </p>
+    </div>
+    <div>
+        <p>
+            Размеры контейнера: ширина W, длина L, высота H.
+        </p>
+        <p>
+            Стороны контейнера параллельны осям координат.
+        </p>
+        <p>
+            Ближний угол контейнера расположен в точке (0,0,0),
+            дальний расположен в точке (W,H,L).
+        </p>
+        <p>
+            Размеры <span class="latex_math">i</span>-го блока:
+            ширина <span class="latex_math">w<sub>i</sub></span>,
+            высота <span class="latex_math">h<sub>i</sub></span>,
+            длина <span class="latex_math">l<sub>i</sub></span>,
+            <span class="latex_math">i</span>=<span class="latex_math">1</span>,<span class="latex_math">N</span>.
+        </p>
+        <p>
+            Координаты центра <span class="latex_math">i</span>-го блока:
+            <span class="latex_math">x<sub>i</sub></span>,
+            <span class="latex_math">y<sub>i</sub></span>,
+            <span class="latex_math">z<sub>i</sub></span>
+        </p>
+        <div class="image-container">
+            <img src="./formulas/imgtemp_6uf4vr-1.svg" height="40"/>
+        </div>
+        <div class="image-container">
+            <img src="./formulas/imgtemp_nvawig-3.svg" height="45"/>
+        </div>
+        <div class="image-container">
+            <img src="./formulas/imgtemp_3igw0r-1.svg" height="45"/>
+        </div>
+        Целевая функция:
+        <div class="image-container">
+            <img src="./formulas/imgtemp_9gyq3z-1.svg" height="20" style="margin-bottom:10px"/>
+        </div>
+        <div class="image-container">
+            <img src="./formulas/imgtemp_v9kcsb-1.svg" height="15"/>
+        </div>
+        Ограничения и условия задачи:
+        <ol>
+            <li>Суммарный объём блоков не превышает объёма контейнера</li>
+            <li>
+                Блоки не должны пересекаться друг с другом
+            </li>
+            <li>Блоки не должны выходить за границы контейнера</li>
+            <li>
+                Стороны блоков должны располагаться параллельно
+                соответствующим сторонам контейнера. При этом блоки допустимо поворачивать
+                вокруг осей X, Y, Z на углы, кратные 90°
+            </li>
+
+        </ol>
+    </div>
+</body>
+</html>
