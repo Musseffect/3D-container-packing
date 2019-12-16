@@ -10,16 +10,16 @@
 
 
 namespace Ui {
-class solutionUI;
+class SolutionDialog;
 }
 
-class solutionUI : public QDialog
+class SolutionDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit solutionUI(QWidget *parent = 0);
-    ~solutionUI();
+    explicit SolutionDialog(QWidget *parent = 0);
+    ~SolutionDialog();
     void setup(QVector<BoxInfo>& placements, const QVector<Box> &boxes, const Box bounds);
     void setLog(QString logText);
 private slots:
@@ -31,7 +31,7 @@ private slots:
     void on_horizontalSlider_valueChanged(int value);
     void updateSlider(float distance);
 private:
-    Ui::solutionUI *ui;
+    Ui::SolutionDialog *ui;
     BoxPlacementTableModel* model;
 };
 

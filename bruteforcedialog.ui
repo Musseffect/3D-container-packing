@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BruteForceDialog</class>
+ <widget class="QDialog" name="BruteForceDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>441</width>
+    <height>143</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Максимальное время работы</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="timeSpinBox">
+       <property name="maximum">
+        <double>300.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Критерий размещения</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="criteria">
+       <item>
+        <property name="text">
+         <string>L2-норма крайней точки поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L1-норма крайней точки поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L∞-норма крайней точки поставленных блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Объем огибающей всех блоков</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L2-норма крайней точки текущего блока</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L1-норма крайней точки текущего блока</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L∞-норма крайней точки текущего блока</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="rotateBoxes">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>Поворачивать блоки</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Допустимый объём в процентах</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="volumeSpinBox">
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

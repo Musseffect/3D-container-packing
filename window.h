@@ -24,7 +24,7 @@ public slots:
     void lockUI();
     void workFinished();
     void showSolution(QVector<BoxInfo> placements, const QVector<Box> boxes, const Box &bounds, const QString &log);
-    void showError(QString &error);
+    void showError(QString error);
 private slots:
 
     void on_test_render_action_triggered();
@@ -42,6 +42,8 @@ private slots:
     void on_openAction_triggered();
 
     void on_saveAction_triggered();
+
+    void on_bruteforce_action_triggered();
 
 private:
     void closeEvent(QCloseEvent* e);

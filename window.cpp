@@ -1,13 +1,15 @@
 #include "window.h"
 #include "ui_window.h"
-#include "solutionui.h"
-#include "greedysolverdialog.h"
-#include "geneticsolverdialog.h"
-#include "boxtabledelegate.h"
+#include "solutiondialog.h"
+#include "greedydialog.h"
+#include "geneticdialog.h"
+#include "bruteforcedialog.h"
 #include "greedysolver.h"
 #include "geneticsolver.h"
+#include "bruteforcesolver.h"
 #include "solverworker.h"
 #include "helpwindow.h"
+#include "boxtabledelegate.h"
 
 #include <qcompilerdetection.h>
 
@@ -112,13 +114,14 @@ void Window::on_test_render_action_triggered()
     Chromosome c;
     c.genes=genes;
     c.orientations=orientations;
-    placements=calculatePlacements(c,boxes,false);
-    solutionUI* solutionWindow=new solutionUI(this);
+    float w,h,l;
+    placements=calculatePlacements(c,boxes,false,w,h,l);
+    SolutionDialog* solutionWindow=new SolutionDialog(this);
     solutionWindow->show();
     solutionWindow->setup(placements,boxes,bounds);
 
-    placements=calculatePlacements(c,boxes,true);
-    solutionWindow=new solutionUI(this);
+    placements=calculatePlacements(c,boxes,true,w,h,l);
+    solutionWindow=new SolutionDialog(this);
     solutionWindow->show();
     solutionWindow->setup(placements,boxes,bounds);
 }
@@ -159,7 +162,7 @@ void Window::on_greedy_action_triggered()
     QVector<Box> boxes=model->getBoxes().toVector();
     Box bounds=getBounds();
 
-    GreedySolverDialog* dialog=new GreedySolverDialog();
+    GreedyDialog* dialog=new GreedyDialog();
     dialog->setModal(true);
     if(dialog->exec()==QDialog::Rejected)
     {
@@ -208,13 +211,13 @@ void Window::workFinished()
 }
 void Window::showSolution(QVector<BoxInfo> placements,const QVector<Box> boxes,const Box& bounds,const QString& log)
 {
-    solutionUI* solutionWindow=new solutionUI(this);
+    SolutionDialog* solutionWindow=new SolutionDialog(this);
     solutionWindow->setLog(log);
     solutionWindow->show();
     solutionWindow->setup(placements,boxes,bounds);
     workFinished();
 }
-void Window::showError(QString& error)
+void Window::showError(QString error)
 {
     QMessageBox msgBox;
     msgBox.setText(error);
@@ -271,7 +274,7 @@ void Window::on_genetic_action_triggered()
 
     QVector<Box> boxes=model->getBoxes().toVector();
     Box bounds=getBounds();
-    GeneticSolverDialog* dialog=new GeneticSolverDialog();
+    GeneticDialog* dialog=new GeneticDialog();
     dialog->setModal(true);
     if(dialog->exec()==QDialog::Rejected)
     {
@@ -435,4 +438,36 @@ void Window::on_saveAction_triggered()
     QJsonDocument saveDoc(gameObject);
     saveFile.write(saveDoc.toJson());
     return;
+}
+
+void Window::on_bruteforce_action_triggered()
+{
+    QVector<Box> boxes=model->getBoxes().toVector();
+    Box bounds=getBounds();
+    BruteForceDialog* dialog=new BruteForceDialog();
+    dialog->setModal(true);
+    if(dialog->exec()==QDialog::Rejected)
+    {
+        delete dialog;
+        return;
+    }
+    progressBar->setValue(0);
+    progressBar->setVisible(true);
+    int criteria=dialog->getCriteria();
+    float maxTime=dialog->getMaxTime();
+    bool rotateBoxes=dialog->getRotateBoxesValue();
+    delete dialog;
+    lockUI();
+    BruteForceSolver* solver=new BruteForceSolver();
+    solver->init(rotateBoxes,criteria,maxTime);
+    connect(solver, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
+
+    SolverThread *solverThread = new SolverThread(this);
+    solverThread->init(solver,boxes,bounds);
+    connect(solverThread, &SolverThread::showSolution, this, &Window::showSolution);
+    connect(solverThread, &SolverThread::error, this, &Window::showError);
+    connect(solverThread, &SolverThread::finished, solverThread, &SolverThread::deleteLater);
+    connect(qApp, SIGNAL(aboutToQuit()), solverThread, SLOT(deleteLater()));
+
+    solverThread->start();
 }

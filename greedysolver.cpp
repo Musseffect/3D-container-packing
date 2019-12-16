@@ -202,6 +202,7 @@ QVector<BoxInfo> GreedySolver::solveMaxBoxMinPos(const QVector<Box> &boxes, cons
     float volume=x*y*z;
     t = clock()-t;
     log+="Объём: "+QString::number(volume)+".\n";
+    log+="Габариты: "+QString::number(x)+"x"+QString::number(y)+"x"+QString::number(z)+".\n";
     log+="Затраченное время: "+QString::number(qMax(((float)t)/CLOCKS_PER_SEC,0.1f))+" секунд";
     return placements;
 }
@@ -285,8 +286,8 @@ QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bound
                                     envelopeZ));
                            break;
                        case VOLUMEMINGLOB:
-                           fitness=envelopeX+
-                                   envelopeY+
+                           fitness=envelopeX*
+                                   envelopeY*
                                    envelopeZ;
                            break;
                        case EUCLDISTMINLOC:
@@ -431,6 +432,7 @@ QVector<BoxInfo> GreedySolver::solve(const QVector<Box> &boxes, const Box &bound
     float volume=x*y*z;
     t = clock()-t;
     log+="Объём: "+QString::number(volume)+".\n";
+    log+="Габариты: "+QString::number(x)+"x"+QString::number(y)+"x"+QString::number(z)+".\n";
     log+="Затраченное время: "+QString::number(qMax(((float)t)/CLOCKS_PER_SEC,0.1f))+" секунд";
     return placements;
 }

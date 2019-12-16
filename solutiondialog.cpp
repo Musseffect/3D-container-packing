@@ -1,9 +1,9 @@
-#include "solutionui.h"
-#include "ui_solutionui.h"
+#include "solutiondialog.h"
+#include "ui_solutiondialog.h"
 
-solutionUI::solutionUI(QWidget *parent) :
+SolutionDialog::SolutionDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::solutionUI)
+    ui(new Ui::SolutionDialog)
 {
     ui->setupUi(this);
     ui->openGLWidget->setCameraType(CameraType::FreeCamera);
@@ -20,7 +20,7 @@ solutionUI::solutionUI(QWidget *parent) :
             this,
             SLOT(updateSlider(float)));
 }
-void solutionUI::onSelectionChange(const QItemSelection &selected, const QItemSelection &deselected)
+void SolutionDialog::onSelectionChange(const QItemSelection &selected, const QItemSelection &deselected)
 {
     QItemSelection selection=ui->boxPlacementView->selectionModel()->selection();
     QVector<int> indexes;
@@ -36,7 +36,7 @@ void solutionUI::onSelectionChange(const QItemSelection &selected, const QItemSe
     ui->openGLWidget->select(indexes);
 }
 
-solutionUI::~solutionUI()
+SolutionDialog::~SolutionDialog()
 {
     delete ui;
     delete model;
@@ -46,7 +46,7 @@ bool lessThanPlacement(const BoxInfo &s1, const BoxInfo &s2)
     return s1.boxID < s2.boxID;
 }
 
-void solutionUI::setup(QVector<BoxInfo> &placements, const QVector<Box> &boxes,const Box bounds)
+void SolutionDialog::setup(QVector<BoxInfo> &placements, const QVector<Box> &boxes,const Box bounds)
 {
     QVector<BoxArrayStruct> boxArray;
     qSort(placements.begin(),placements.end(),lessThanPlacement);
@@ -75,41 +75,41 @@ void solutionUI::setup(QVector<BoxInfo> &placements, const QVector<Box> &boxes,c
     ui->openGLWidget->init(boxArray,bounds);
 }
 
-void solutionUI::setLog(QString logText)
+void SolutionDialog::setLog(QString logText)
 {
     ui->logTextEdit->setPlainText(logText);
 }
 
-void solutionUI::on_freeCamera_clicked()
+void SolutionDialog::on_freeCamera_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::FreeCamera);
     ui->openGLWidget->update();
 }
 
-void solutionUI::on_oxy_clicked()
+void SolutionDialog::on_oxy_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OXY);
     ui->openGLWidget->update();
 }
 
-void solutionUI::on_oxz_clicked()
+void SolutionDialog::on_oxz_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OXZ);
     ui->openGLWidget->update();
 }
 
-void solutionUI::on_ozy_clicked()
+void SolutionDialog::on_ozy_clicked()
 {
     ui->openGLWidget->setCameraType(CameraType::OZY);
     ui->openGLWidget->update();
 }
 
-void solutionUI::on_horizontalSlider_valueChanged(int value)
+void SolutionDialog::on_horizontalSlider_valueChanged(int value)
 {
     ui->openGLWidget->setDistance(value/100.f);
 }
 
-void solutionUI::updateSlider(float distance)
+void SolutionDialog::updateSlider(float distance)
 {
     ui->horizontalSlider->setValue(distance*100);
 }

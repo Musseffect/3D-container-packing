@@ -113,6 +113,8 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
             float currentTime=timer.elapsed()/10e2;
             currentTime=float(clock()-t)/CLOCKS_PER_SEC;
             totalTime=currentTime;
+            emit BoxPackingSolver::progress(qMax<int>(currentIteration*100.0f/this->maxIterations,int(totalTime*100.f/this->maxTime)));
+
             if(currentTime>maxTime)
             {
                 goto END;
@@ -203,7 +205,10 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
     END:
     if(bestVolume<10e8)
     {
+        float x,y,z;
+        QVector<BoxInfo> placements=calculatePlacements(bestSolution,boxes,compressBoxes,x,y,z);
         log+="Объём: "+QString::number(bestVolume)+".\n";
+        log+="Габариты: "+QString::number(x)+"x"+QString::number(y)+"x"+QString::number(z)+".\n";
         log+="Решение: ";
         for(int i=0;i<bestSolution.genes.length();i++)
         {
@@ -220,7 +225,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
         }
         log+="\nКоличество итераций: "+QString::number(currentIteration);
         log+="\nЗатраченное время: "+QString::number(qMax(totalTime,0.1f))+" секунд";
-        return calculatePlacements(bestSolution,boxes,compressBoxes);
+        return placements;
     }
     throw QString("Не удалось найти подходящее решение");
 }
@@ -580,13 +585,13 @@ bool zCoordLessThan(const BoxInfo &d1, const BoxInfo &d2)
     return d1.z < d2.z; // sort by z
 }
 
-
+#define ALTERNATIVE
+#ifdef ALTERNATIVE
 float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound,const bool tightPacking)
 {
-    typedef BoxInfo boxplacement;
-    struct placementEms{float maxx;float maxy;float maxz;QList<boxplacement>* bpList;QList<emsstruct>* emsList;};
-
-    QStack<placementEms> operands;
+    struct block{float maxx;float maxy;float maxz;int left;int operation;};
+    QList<block> blocks;
+    QStack<block> operands;
     for(QVector<int>::const_iterator iter=chromosome.genes.constBegin();iter!=chromosome.genes.constEnd();++iter)
     {
         int currentGene=*iter;
@@ -594,60 +599,114 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
         {
             if(operands.length()<2)
                 throw QString("Ошибка в записи ОПН");
-            placementEms a=operands.pop();//left operand
-            placementEms b=operands.pop();//right operand
-            delete b.emsList;
-            placementEms result;
-            QList<emsstruct>* emsList=a.emsList;
+            block a=operands.pop();//left operand
+            block b=operands.pop();//right operand
+            block result;
+            result.left=blocks.length();
+            blocks.push(a);
+            blocks.push(b);
+            result.operation=currentGene;
+            switch(currentGene)
+            {
+                case -1:
+                    result.maxx=a.maxx+b.maxx;
+                    result.maxy=qMax(a.maxy,b.maxy);
+                    result.maxz=qMax(a.maxz,b.maxz);
+                    break;
+                case -2:
+                    result.maxx=qMax(a.maxx,b.maxx);
+                    result.maxy=a.maxy+b.maxy;
+                    result.maxz=qMax(a.maxz,b.maxz);
+                    break;
+                case -3:
+                    result.maxx=qMax(a.maxx,b.maxx);
+                    result.maxy=qMax(a.maxy,b.maxy);
+                    result.maxz=a.maxz+b.maxz;
+                    break;
+            }
+            operands.push(result);
+        }else
+        {
+            Box box=boxes[currentGene].getOrientation(chromosome.orientations[currentGene]);
+
+            operands.push(block{box.width(),box.height(),box.length(),-1,currentGene});
+        }
+    }
+    block root=operands.pop();
+    //objective function
+    float w=root.maxx;
+    float h=root.maxy;
+    float l=root.maxz;
+    return w*h*l;
+
+
+    struct blockPos{float x;float y;float z;int index;};
+    QStack<blockPos> stack;
+    stack.push(blockPos{0.f,0.f,0.f,blocks.length()});
+    blocks.push(root);
+    QVector<BoxInfo> placements;
+    while(!stack.isEmpty())
+    {
+        blockPos current=stack.pop();
+        block currentBlock=blocks[current.index];
+        if(parent.operation>=0)//not an operator
+        {
+            BoxInfo boxInfo;
+            boxInfo.boxID=currentBlock.operation;
+            boxInfo.x=current.x+currentBlock.maxx*0.5f;
+            boxInfo.y=current.y+currentBlock.maxy*0.5f;
+            boxInfo.z=current.z+currentBlock.maxz*0.5f;
+            boxInfo.o=chromosome.orientations[currentBlock.operation];
+            placements.push_back(placements);
+        }else{
+            float x1,y1,z1;
+            x1=current.x;
+            y1=current.y;
+            z1=current.z;
+            float x2,y2,z2;
+            x2=x1;
+            y2=y1;
+            z2=z1;
+            block left=blocks[currentBlock.left];
+            switch(parent.operation)
+            {
+                case -1:
+                x2+=left.maxx;
+                break;
+                case -2:
+                y2+=left.maxy;
+                break;
+                case -3:
+                z2+=left.maxz;
+                break;
+            }
+            stack.push(blockPos{x1,y1,z1,currentBlock.left});
+            stack.push(blockPos{x2,y2,z2,currentBlock.left+1});
+        }
+    }
+    return placements;
+#endif
+
+float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound,const bool tightPacking)
+{
+    typedef BoxInfo boxplacement;
+    struct placement{float maxx;float maxy;float maxz;QList<boxplacement>* bpList;};
+
+    QStack<placement> operands;
+    for(QVector<int>::const_iterator iter=chromosome.genes.constBegin();iter!=chromosome.genes.constEnd();++iter)
+    {
+        int currentGene=*iter;
+        if(currentGene<0)
+        {
+            if(operands.length()<2)
+                throw QString("Ошибка в записи ОПН");
+            placement a=operands.pop();//left operand
+            placement b=operands.pop();//right operand
+            placement result;
             switch(currentGene)
             {
                 case -1:
                     {
-#ifdef PACKING
-                    //sort b boxes based on a x coordinate
-                    //for each box in b
-                    /*
-                      for each ems find ems with minimal x coordinate and place current box
-                      for each ems recompute it with new box
-                    */
-                    //sort in ascending order
-                    qSort(b.bpList->begin(),b.bpList->end(),xCoordLessThan);
-                    float maxxResult=a.maxx;
-                    for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
-                    {
-                        int emsIndex=-1;
-                        bpit->x+=a.maxx;
-                        const Box& box=boxes.at(bpit->boxID).getOrientation(bpit->o);
-                        float minx=bpit->x;
-                        float miny=bpit->y;
-                        float minz=bpit->z;
-                        float maxx=bpit->x+box.width();
-                        float maxy=bpit->y+box.height();
-                        float maxz=bpit->z+box.length();
-                        for(int j=0;j<emsList->length();j++)
-                        {
-                            const emsstruct &ems=emsList->at(j);
-                            if(ems.minx<=minx&&ems.maxx>=maxx&&
-                                    ems.miny<=miny&&ems.maxy>=maxy&&
-                                    ems.minz<=minz&&ems.maxz>=maxz)
-                            {
-                                emsIndex=j;
-                                minx=ems.minx;
-                            }
-                        }
-                        bpit->x=minx;
-                        maxx=minx+box.width();
-                        maxxResult=qMax(maxx,maxxResult);
-                        //recompute ems
-                        recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
-                        a.bpList->append(*bpit);
-                    }
-                    reduceEMS(emsList);
-                    //x
-                    result.maxx=maxxResult;
-                    result.maxy=qMax(a.maxy,b.maxy);
-                    result.maxz=qMax(a.maxz,b.maxz);
-#else
                     for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
                     {
                         bpit->x+=a.maxx;
@@ -659,58 +718,16 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
                         float maxy=bpit->y+box.height();
                         float maxz=bpit->z+box.length();
                         maxx=minx+box.width();
-                        //recompute ems
-                        recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
                         a.bpList->append(*bpit);
                     }
-                    reduceEMS(emsList);
+                    //reduceEMS(emsList);
                     result.maxx=a.maxx+b.maxx;
                     result.maxy=qMax(a.maxy,b.maxy);
                     result.maxz=qMax(a.maxz,b.maxz);
-#endif
                     break;
                     }
                 case -2:
             {
-#ifdef PACKING
-                    //sort in ascending order
-                    qSort(b.bpList->begin(),b.bpList->end(),yCoordLessThan);
-                    float maxyResult=a.maxy;
-                    for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
-                    {
-                        int emsIndex=-1;
-                        bpit->y+=a.maxy;
-                        const Box& box=boxes.at(bpit->boxID).getOrientation(bpit->o);
-                        float minx=bpit->x;
-                        float miny=bpit->y;
-                        float minz=bpit->z;
-                        float maxx=bpit->x+box.width();
-                        float maxy=bpit->y+box.height();
-                        float maxz=bpit->z+box.length();
-                        for(int j=0;j<emsList->length();j++)
-                        {
-                            const emsstruct &ems=emsList->at(j);
-                            if(ems.minx<=minx&&ems.maxx>=maxx&&
-                                    ems.miny<=miny&&ems.maxy>=maxy&&
-                                    ems.minz<=minz&&ems.maxz>=maxz)
-                            {
-                                emsIndex=j;
-                                miny=ems.miny;
-                            }
-                        }
-                        bpit->y=miny;
-                        maxy=miny+box.height();
-                        maxyResult=qMax(maxy,maxyResult);
-                        //recompute ems
-                        recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
-                        a.bpList->append(*bpit);
-                    }
-                    reduceEMS(emsList);
-                    //y
-                    result.maxx=qMax(a.maxx,b.maxx);
-                    result.maxy=maxyResult;
-                    result.maxz=qMax(a.maxz,b.maxz);
-#else
                 for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
                 {
                     bpit->y+=a.maxy;
@@ -723,59 +740,18 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
                     float maxz=bpit->z+box.length();
                     maxy=miny+box.height();
                     //recompute ems
-                    recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
+                    //recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
                     a.bpList->append(*bpit);
                 }
-                reduceEMS(emsList);
+                //reduceEMS(emsList);
                 //y
                 result.maxx=qMax(a.maxx,b.maxx);
                 result.maxy=a.maxy+b.maxy;
                 result.maxz=qMax(a.maxz,b.maxz);
-#endif
                     break;
             }
                 case -3:
             {
-#ifdef PACKING
-                    //sort in ascending order
-                    qSort(b.bpList->begin(),b.bpList->end(),zCoordLessThan);
-                    float maxzResult=a.maxz;
-                    for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
-                    {
-                        int emsIndex=-1;
-                        bpit->z+=a.maxz;
-                        const Box& box=boxes.at(bpit->boxID).getOrientation(bpit->o);
-                        float minx=bpit->x;
-                        float miny=bpit->y;
-                        float minz=bpit->z;
-                        float maxx=bpit->x+box.width();
-                        float maxy=bpit->y+box.height();
-                        float maxz=bpit->z+box.length();
-                        for(int j=0;j<emsList->length();j++)
-                        {
-                            const emsstruct &ems=emsList->at(j);
-                            if(ems.minx<=minx&&ems.maxx>=maxx&&
-                                    ems.miny<=miny&&ems.maxy>=maxy&&
-                                    ems.minz<=minz&&ems.maxz>=maxz)
-                            {
-                                emsIndex=j;
-                                minz=ems.minz;
-                            }
-                        }
-                        bpit->z=minz;
-                        maxz=minz+box.length();
-                        maxzResult=qMax(maxz,maxzResult);
-                        //recompute ems
-                        recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
-                        a.bpList->append(*bpit);
-                    }
-                    reduceEMS(emsList);
-                    delete b.bpList;
-                    //z
-                    result.maxx=qMax(a.maxx,b.maxx);
-                    result.maxy=qMax(a.maxy,b.maxy);
-                    result.maxz=maxzResult;
-#else
                 for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
                 {
                     bpit->z+=a.maxz;
@@ -788,32 +764,26 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
                     float maxz=bpit->z+box.length();
                     maxz=minz+box.length();
                     //recompute ems
-                    recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
+                    //recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
                     a.bpList->append(*bpit);
                 }
-                reduceEMS(emsList);
-                delete b.bpList;
+                //reduceEMS(emsList);
                 //z
                 result.maxx=qMax(a.maxx,b.maxx);
                 result.maxy=qMax(a.maxy,b.maxy);
                 result.maxz=a.maxz+b.maxz;
-#endif
                     break;
             }
             }
             result.bpList=a.bpList;
-            result.emsList=a.emsList;
+            delete b.bpList;
             operands.push(result);
         }else
         {
             Box box=boxes[currentGene].getOrientation(chromosome.orientations[currentGene]);
             QList<boxplacement>* bpList=new QList<boxplacement>();
             bpList->append(boxplacement{0.f,0.f,0.f,currentGene,chromosome.orientations[currentGene]});
-            QList<emsstruct>* emsList=new QList<emsstruct>();
-            emsList->append(emsstruct{box.width(),0.f,0.f,10e8,10e8,10e8});
-            emsList->append(emsstruct{0.f,box.height(),0.f,10e8,10e8,10e8});
-            emsList->append(emsstruct{0.f,0.f,box.length(),10e8,10e8,10e8});
-            operands.push(placementEms{box.width(),box.height(),box.length(),bpList,emsList});
+            operands.push(placement{box.width(),box.height(),box.length(),bpList});
         }
     }
     if(operands.length()!=1)
@@ -821,15 +791,13 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
         for(int i=0;i<operands.length();i++)
         {
             delete operands[i].bpList;
-            delete operands[i].emsList;
         }
         throw QString("Ошибка в записи ОПН");
     }
-    placementEms last=operands.pop();
+    placement last=operands.pop();
 
     if(tightPacking)
     {
-        auto emsList=last.emsList;
         last.maxx=0.0;
         last.maxy=0.0;
         last.maxz=0.0;
@@ -924,12 +892,11 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
                 float amaxy=aminy+abox.height();
                 float amaxz=aminz+abox.length();
                 aminz=0.0f;
-                if((aminx < maxx && amaxx > minx) &&
-                         (aminy < maxy && amaxy > miny) &&
-                         (aminz < maxz && amaxz > minz))
+                if((aminx <= maxx && amaxx >= minx) &&
+                         (aminy <= maxy && amaxy >= miny) &&
+                         (amaxz <= bpit->z))
                 {
-                    minz=amaxz;
-                    maxz=minz+box.length();
+                    minz=qMax(amaxz,minz);
                 }
             }
             bpit->z=minz;
@@ -938,7 +905,6 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
         }
     }
     delete last.bpList;
-    delete last.emsList;
     float volume=last.maxx*last.maxy*last.maxz;
     if(last.maxx>bound.w||last.maxy>bound.h||last.maxz>bound.l)
     {
@@ -947,12 +913,12 @@ float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,c
     //static_assert(false,"Not implemented");
     return volume;
 }
-QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes,const bool tightPacking)
+QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes,const bool tightPacking,float&w,float&h,float&l)
 {    typedef BoxInfo boxplacement;
-     struct placementEms{float maxx;float maxy;float maxz;QList<boxplacement>* bpList;QList<emsstruct>* emsList;};
+     struct placement{float maxx;float maxy;float maxz;QList<boxplacement>* bpList;};
 
 
-     QStack<placementEms> operands;
+     QStack<placement> operands;
      for(QVector<int>::const_iterator iter=chromosome.genes.constBegin();iter!=chromosome.genes.constEnd();++iter)
      {
          int currentGene=*iter;
@@ -960,53 +926,13 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
          {
              if(operands.length()<2)
                  throw QString("Ошибка в записи ОПН");
-             placementEms a=operands.pop();//left operand
-             placementEms b=operands.pop();//right operand
-             delete b.emsList;
-             placementEms result;
-             QList<emsstruct>* emsList=a.emsList;
+             placement a=operands.pop();//left operand
+             placement b=operands.pop();//right operand
+             placement result;
              switch(currentGene)
              {
                  case -1:
                      {
-#ifdef PACKING
-                     qSort(b.bpList->begin(),b.bpList->end(),xCoordLessThan);
-                     float maxxResult=a.maxx;
-                     for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
-                     {
-                         int emsIndex=-1;
-                         bpit->x+=a.maxx;
-                         const Box& box=boxes.at(bpit->boxID).getOrientation(bpit->o);
-                         float minx=bpit->x;
-                         float miny=bpit->y;
-                         float minz=bpit->z;
-                         float maxx=bpit->x+box.width();
-                         float maxy=bpit->y+box.height();
-                         float maxz=bpit->z+box.length();
-                         for(int j=0;j<emsList->length();j++)
-                         {
-                             const emsstruct &ems=emsList->at(j);
-                             if(ems.minx<=minx&&ems.maxx>=maxx&&
-                                     ems.miny<=miny&&ems.maxy>=maxy&&
-                                     ems.minz<=minz&&ems.maxz>=maxz)
-                             {
-                                 emsIndex=j;
-                                 minx=ems.minx;
-                             }
-                         }
-                         bpit->x=minx;
-                         maxx=minx+box.w;
-                         maxxResult=qMax(maxx,maxxResult);
-                         //recompute ems
-                         recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
-                         a.bpList->append(*bpit);
-                     }
-                     reduceEMS(emsList);
-                     //x
-                     result.maxx=maxxResult;
-                     result.maxy=qMax(a.maxy,b.maxy);
-                     result.maxz=qMax(a.maxz,b.maxz);
-#else
                      for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
                      {
                          bpit->x+=a.maxx;
@@ -1019,57 +945,17 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
                          float maxz=bpit->z+box.length();
                          maxx=minx+box.width();
                          //recompute ems
-                         recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
+                         //recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
                          a.bpList->append(*bpit);
                      }
-                     reduceEMS(emsList);
+                     //reduceEMS(emsList);
                      result.maxx=a.maxx+b.maxx;
                      result.maxy=qMax(a.maxy,b.maxy);
                      result.maxz=qMax(a.maxz,b.maxz);
-#endif
                     break;
                      }
                  case -2:
              {
-#ifdef PACKING
-                    //sort in ascending order
-                     qSort(b.bpList->begin(),b.bpList->end(),yCoordLessThan);
-                     float maxyResult=a.maxy;
-                     for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
-                     {
-                         int emsIndex=-1;
-                         bpit->y+=a.maxy;
-                         const Box& box=boxes.at(bpit->boxID).getOrientation(bpit->o);
-                         float minx=bpit->x;
-                         float miny=bpit->y;
-                         float minz=bpit->z;
-                         float maxx=bpit->x+box.width();
-                         float maxy=bpit->y+box.height();
-                         float maxz=bpit->z+box.length();
-                         for(int j=0;j<emsList->length();j++)
-                         {
-                             const emsstruct &ems=emsList->at(j);
-                             if(ems.minx<=minx&&ems.maxx>=maxx&&
-                                     ems.miny<=miny&&ems.maxy>=maxy&&
-                                     ems.minz<=minz&&ems.maxz>=maxz)
-                             {
-                                 emsIndex=j;
-                                 miny=ems.miny;
-                             }
-                         }
-                         bpit->y=miny;
-                         maxy=miny+box.h;
-                         maxyResult=qMax(maxy,maxyResult);
-                         //recompute ems
-                         recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
-                         a.bpList->append(*bpit);
-                     }
-                     reduceEMS(emsList);
-                     //y
-                     result.maxx=qMax(a.maxx,b.maxx);
-                     result.maxy=maxyResult;
-                     result.maxz=qMax(a.maxz,b.maxz);
-#else
                      for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
                      {
                          bpit->y+=a.maxy;
@@ -1082,59 +968,18 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
                          float maxz=bpit->z+box.length();
                          maxy=miny+box.height();
                          //recompute ems
-                         recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
+                         //recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
                          a.bpList->append(*bpit);
                      }
-                     reduceEMS(emsList);
+                     //reduceEMS(emsList);
                      //y
                      result.maxx=qMax(a.maxx,b.maxx);
                      result.maxy=a.maxy+b.maxy;
                      result.maxz=qMax(a.maxz,b.maxz);
-#endif
                      break;
              }
                  case -3:
              {
-#ifdef PACKING
-                     //sort in ascending order
-                     qSort(b.bpList->begin(),b.bpList->end(),zCoordLessThan);
-                     float maxzResult=a.maxz;
-                     for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
-                     {
-                         int emsIndex=-1;
-                         bpit->z+=a.maxz;
-                         const Box& box=boxes.at(bpit->boxID).getOrientation(bpit->o);
-                         float minx=bpit->x;
-                         float miny=bpit->y;
-                         float minz=bpit->z;
-                         float maxx=bpit->x+box.width();
-                         float maxy=bpit->y+box.height();
-                         float maxz=bpit->z+box.length();
-                         for(int j=0;j<emsList->length();j++)
-                         {
-                             const emsstruct &ems=emsList->at(j);
-                             if(ems.minx<=minx&&ems.maxx>=maxx&&
-                                     ems.miny<=miny&&ems.maxy>=maxy&&
-                                     ems.minz<=minz&&ems.maxz>=maxz)
-                             {
-                                 emsIndex=j;
-                                 minz=ems.minz;
-                             }
-                         }
-                         bpit->z=minz;
-                         maxz=minz+box.l;
-                         maxzResult=qMax(maxz,maxzResult);
-                         //recompute ems
-                         recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
-                         a.bpList->append(*bpit);
-                     }
-                     reduceEMS(emsList);
-                     delete b.bpList;
-                     //z
-                     result.maxx=qMax(a.maxx,b.maxx);
-                     result.maxy=qMax(a.maxy,b.maxy);
-                     result.maxz=maxzResult;
-#else
                      for(QList<boxplacement>::iterator bpit=b.bpList->begin();bpit!=b.bpList->end();++bpit)
                      {
                          bpit->z+=a.maxz;
@@ -1147,32 +992,26 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
                          float maxz=bpit->z+box.length();
                          maxz=minz+box.length();
                          //recompute ems
-                         recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
+                         //recompute(emsList,minx,maxx,miny,maxy,minz,maxz);
                          a.bpList->append(*bpit);
                      }
-                     reduceEMS(emsList);
-                     delete b.bpList;
+                     //reduceEMS(emsList);
                      //z
                      result.maxx=qMax(a.maxx,b.maxx);
                      result.maxy=qMax(a.maxy,b.maxy);
                      result.maxz=a.maxz+b.maxz;
-#endif
                      break;
              }
              }
              result.bpList=a.bpList;
-             result.emsList=a.emsList;
              operands.push(result);
+             delete b.bpList;
          }else
          {
              Box box=boxes[currentGene].getOrientation(chromosome.orientations[currentGene]);
              QList<boxplacement>* bpList=new QList<boxplacement>();
              bpList->append(boxplacement{0.f,0.f,0.f,currentGene,chromosome.orientations[currentGene]});
-             QList<emsstruct>* emsList=new QList<emsstruct>();
-             emsList->append(emsstruct{box.width(),0.f,0.f,10e8,10e8,10e8});
-             emsList->append(emsstruct{0.f,box.height(),0.f,10e8,10e8,10e8});
-             emsList->append(emsstruct{0.f,0.f,box.length(),10e8,10e8,10e8});
-             operands.push(placementEms{box.width(),box.height(),box.length(),bpList,emsList});
+             operands.push(placement{box.width(),box.height(),box.length(),bpList});
          }
      }
      if(operands.length()!=1)
@@ -1180,15 +1019,13 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
          for(int i=0;i<operands.length();i++)
          {
              delete operands[i].bpList;
-             delete operands[i].emsList;
          }
          throw QString("Ошибка в записи ОПН");
      }
-     placementEms last=operands.pop();
+     placement last=operands.pop();
 
       if(tightPacking)
       {
-          auto emsList=last.emsList;
           last.maxx=0.0;
           last.maxy=0.0;
           last.maxz=0.0;
@@ -1215,12 +1052,11 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
                   float amaxy=aminy+abox.height();
                   float amaxz=aminz+abox.length();
                   aminx=0.0f;
-                  if((aminx < maxx && amaxx > minx) &&
-                           (aminy < maxy && amaxy > miny) &&
-                           (aminz < maxz && amaxz > minz))
+                  if((aminy < maxy && amaxy > miny) &&
+                           (aminz < maxz && amaxz > minz) &&
+                           (amaxx <= bpit->x))
                   {
-                      minx=amaxx;
-                      maxx=minx+box.width();
+                      minx=qMax(amaxx,minx);
                   }
               }
               bpit->x=minx;
@@ -1250,11 +1086,10 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
                   float amaxz=aminz+abox.length();
                   aminy=0.0f;
                   if((aminx < maxx && amaxx > minx) &&
-                           (aminy < maxy && amaxy > miny) &&
-                           (aminz < maxz && amaxz > minz))
+                           (aminz < maxz && amaxz > minz) &&
+                           (amaxy <= bpit->y))
                   {
-                      miny=amaxy;
-                      maxy=miny+box.height();
+                      miny=qMax(amaxy,miny);
                   }
               }
               bpit->y=miny;
@@ -1285,10 +1120,9 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
                   aminz=0.0f;
                   if((aminx < maxx && amaxx > minx) &&
                            (aminy < maxy && amaxy > miny) &&
-                           (aminz < maxz && amaxz > minz))
+                           (amaxz <= bpit->z))
                   {
-                      minz=amaxz;
-                      maxz=minz+box.length();
+                      minz=qMax(amaxz,minz);
                   }
               }
               bpit->z=minz;
@@ -1306,7 +1140,9 @@ QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<
          iter->z+=box.length()*0.5f;
      }
      delete last.bpList;
-     delete last.emsList;
+     w=last.maxx;
+     h=last.maxy;
+     l=last.maxz;
      return placements;
 }
 
@@ -1369,6 +1205,12 @@ void reduceEMS(QList<emsstruct>* emsList)
     for(int l=emsList->length()-1;l>=0;l--)
     {
         emsstruct c1=emsList->operator [](l);
+
+        if(c1.maxx-c1.minx<0.01||c1.maxy-c1.miny<0.01||c1.maxz-c1.minz<0.01)
+        {
+            emsList->removeAt(l);
+            continue;
+        }
         for(int k=0;k<l;k++)
         {
             emsstruct c2=emsList->operator [](k);

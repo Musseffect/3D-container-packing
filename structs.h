@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QMetaType>
 #include <QVector>
+#include <QDebug>
 
 enum BoxOrientation
 {
@@ -97,7 +98,7 @@ public:
         if (json.contains("l") && json["l"].isDouble())
             l = json["l"].toDouble();
         if(json.contains("color")&&json["color"].isDouble())
-            c.fromRgb(json["color"].toInt());
+            c=QColor::fromRgb((unsigned int)json["color"].toDouble());
     }
     void write(QJsonObject &json)
     {

@@ -7,13 +7,13 @@ namespace Ui {
 class GeneticSolverDialog;
 }
 
-class GeneticSolverDialog : public QDialog
+class GeneticDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit GeneticSolverDialog(QWidget *parent = 0);
-    ~GeneticSolverDialog();
+    explicit GeneticDialog(QWidget *parent = 0);
+    ~GeneticDialog();
     int getPopulation() const;
     int getSelectionCount()const;
     int getMaxIterations()const;

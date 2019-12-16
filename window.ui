@@ -191,6 +191,7 @@
     </property>
     <addaction name="greedy_action"/>
     <addaction name="genetic_action"/>
+    <addaction name="bruteforce_action"/>
     <addaction name="test_render_action"/>
    </widget>
    <widget class="QMenu" name="helpMenu">
@@ -240,6 +241,11 @@
   <action name="saveAction">
    <property name="text">
     <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="bruteforce_action">
+   <property name="text">
+    <string>Перебор</string>
    </property>
   </action>
  </widget>

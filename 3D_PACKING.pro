@@ -18,15 +18,12 @@ CONFIG += c++11
 SOURCES += main.cpp\
         window.cpp \
     boxscene.cpp \
-    solutionui.cpp \
     solvers.cpp \
     camera.cpp \
-    geneticsolverdialog.cpp \
     random.cpp \
     boxtablemodel.cpp \
     boxtabledelegate.cpp \
     colordialogwidget.cpp \
-    greedysolverdialog.cpp \
     greedysolver.cpp \
     geneticsolver.cpp \
     boxpackingsolver.cpp \
@@ -34,32 +31,40 @@ SOURCES += main.cpp\
     boxplacementtablemodel.cpp \
     solverworker.cpp \
     helpwindow.cpp \
-    helpbrowser.cpp
+    helpbrowser.cpp \
+    bruteforcesolver.cpp \
+    greedydialog.cpp \
+    solutiondialog.cpp \
+    geneticdialog.cpp \
+    bruteforcedialog.cpp
 
 HEADERS  += window.h \
     boxscene.h \
-    solutionui.h \
     solvers.h \
     camera.h \
-    geneticsolverdialog.h \
     random.h \
     boxtablemodel.h \
     structs.h \
     boxtabledelegate.h \
     colordialogwidget.h \
-    greedysolverdialog.h \
     greedysolver.h \
     geneticsolver.h \
     boxpackingsolver.h \
     boxplacementtablemodel.h \
     solverworker.h \
     helpwindow.h \
-    helpbrowser.h
+    helpbrowser.h \
+    bruteforcesolver.h \
+    solutiondialog.h \
+    greedydialog.h \
+    geneticdialog.h \
+    bruteforcedialog.h
 
 FORMS    += window.ui \
-    solutionui.ui \
-    geneticsolverdialog.ui \
-    greedysolverdialog.ui
+    greedydialog.ui \
+    geneticdialog.ui \
+    solutiondialog.ui \
+    bruteforcedialog.ui
 
 DISTFILES += \
     Shaders/boxshader.geom \

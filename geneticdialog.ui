@@ -47,10 +47,10 @@
      <item row="0" column="1">
       <widget class="QDoubleSpinBox" name="timeSpinBox">
        <property name="maximum">
-        <double>600.000000000000000</double>
+        <double>300.000000000000000</double>
        </property>
        <property name="value">
-        <double>300.000000000000000</double>
+        <double>30.000000000000000</double>
        </property>
       </widget>
      </item>

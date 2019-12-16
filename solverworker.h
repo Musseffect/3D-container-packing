@@ -35,7 +35,7 @@ public:
     }
 signals:
     void showSolution(QVector<BoxInfo> placements,const QVector<Box> boxes,const Box &bounds,const QString& log);
-    void error(QString& err);
+    void error(QString err);
     void progress(int value);
 private:
     SolverThread(const SolverThread&);

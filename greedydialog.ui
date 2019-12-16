@@ -64,7 +64,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="criteria">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -73,17 +73,17 @@
        </property>
        <item>
         <property name="text">
-         <string>Евклидова норма крайней точки поставленных блоков</string>
+         <string>L2-норма крайней точки поставленных блоков</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Манхеттенова норма крайней точки поставленных блоков</string>
+         <string>L1-норма крайней точки поставленных блоков</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Чебышева норма до крайней точки поставленных блоков</string>
+         <string>L∞-норма до крайней точки поставленных блоков</string>
         </property>
        </item>
        <item>
@@ -93,17 +93,17 @@
        </item>
        <item>
         <property name="text">
-         <string>Евклидова норма до крайней точки текущего блока в контейнере</string>
+         <string>L2-норма до крайней точки текущего блока в контейнере</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Манхеттенова норма до крайней точки текущего блока в контейнере</string>
+         <string>L1-норма до крайней точки текущего блока в контейнере</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Чебышева норма до крайней точки текущего блока в контейнере</string>
+         <string>L∞-норма до крайней точки текущего блока в контейнере</string>
         </property>
        </item>
        <item>

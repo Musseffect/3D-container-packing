@@ -72,7 +72,7 @@ bool yCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 bool zCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 
 float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound,const bool tightPacking);
-QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes,const bool tightPacking);
+QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes,const bool tightPacking,float&w,float&h,float&l);
 
 void recompute(QList<emsstruct>* emsList,float minx,float maxx,float miny,float maxy,float minz,float maxz);
 void reduceEMS(QList<emsstruct>* emsList);
