@@ -44,11 +44,16 @@ Window::Window(QWidget *parent) :
                 this,
                 SLOT(onSelectionChange(const QItemSelection &, const QItemSelection &)));
     //FOR TEST PURPOSES ONLY
-    on_test_render_action_triggered();
+    //on_test_render_action_triggered();
     qRegisterMetaType<Box>();
     qRegisterMetaType<BoxInfo>();
     qRegisterMetaType<QVector<BoxInfo>>();
     qRegisterMetaType<QVector<Box>>();
+
+    //generate(QVector3D(7,7,7),QVector3D(0.5,0.5,0.5),QVector3D(0.5,0.5,0.5),10,2);
+    generate(QVector3D(7,7,7),QVector3D(0.5,0.5,0.5),QVector3D(0.5,0.5,0.5),10,5);
+    //generate(QVector3D(9,9,9),QVector3D(0.5,0.5,0.5),QVector3D(0.5,0.5,0.5),20,5);
+    //generate(QVector3D(9,9,9),QVector3D(0.5,0.5,0.5),QVector3D(0.5,0.5,0.5),50,4);
 }
 void Window::onSelectionChange(const QItemSelection & selected, const QItemSelection &deselected)
 {
@@ -226,52 +231,6 @@ void Window::showError(QString error)
 }
 void Window::on_genetic_action_triggered()
 {
-    /*QVector<Box> boxes=model->getBoxes().toVector();
-    Box bounds=getBounds();
-    GeneticSolverDialog* dialog=new GeneticSolverDialog();
-    dialog->setModal(true);
-    if(dialog->exec()==QDialog::Rejected)
-    {
-        delete dialog;
-        return;
-    }
-    int population=dialog->getPopulation();
-    int maxIterations=dialog->getMaxIterations();
-    float maxTime=dialog->getMaxTime();
-    float requiredVolume=dialog->getRequiredVolume();
-    float mutationProb=dialog->getMutationProb();
-    int selectionCount=dialog->getSelectionCount();
-    float crossingoverCount=dialog->getCrossingoverCount();
-    bool rotateBoxes=dialog->getRotateBoxesValue();
-    bool compressBoxes=dialog->getCompressBoxesValue();
-    int repairAttempts=dialog->getRepairAttempts();
-    delete dialog;
-
-    try{
-        GeneticSolver solver;
-        solver.init(population,
-                    maxIterations,
-                    maxTime,
-                    requiredVolume,
-                    mutationProb,
-                    selectionCount,
-                    crossingoverCount,
-                    repairAttempts,
-                    rotateBoxes,
-                    compressBoxes);
-        QVector<BoxInfo> placements=solver.solve(boxes,bounds);
-        solutionUI* solutionWindow=new solutionUI(this);
-        solutionWindow->setLog(solver.getLog());
-        solutionWindow->show();
-        solutionWindow->setup(placements,boxes,bounds);
-    }catch(QString exc)
-    {
-        QMessageBox msgBox;
-        msgBox.setText(exc);
-        msgBox.exec();
-    }*/
-
-
     QVector<Box> boxes=model->getBoxes().toVector();
     Box bounds=getBounds();
     GeneticDialog* dialog=new GeneticDialog();
@@ -362,8 +321,8 @@ void Window::read(const QJsonObject& json)
             Box scene;
             scene.read(json["scene"].toObject());
             ui->widthSpinBox->setValue(scene.w);
-            ui->widthSpinBox->setValue(scene.h);
-            ui->widthSpinBox->setValue(scene.l);
+            ui->heightSpinBox->setValue(scene.h);
+            ui->lengthSpinBox->setValue(scene.l);
     }
 }
 void Window::write(QJsonObject& json)
@@ -471,3 +430,23 @@ void Window::on_bruteforce_action_triggered()
 
     solverThread->start();
 }
+
+void Window::generate(QVector3D max,QVector3D min,QVector3D step,int types,int quantity)
+{
+    QList<Box> boxes;
+    for(int i=0;i<types;i++)
+    {
+        float w=Random::random(min.x(),max.x());
+        w=step.x()*ceil(w/step.x());
+        float h=Random::random(min.y(),max.y());
+        h=step.y()*ceil(h/step.y());
+        float l=Random::random(min.z(),max.z());
+        l=step.z()*ceil(l/step.z());
+        QColor color=QColor(Random::random(255),Random::random(255),Random::random(255));
+        for(int j=0;j<quantity;j++)
+            boxes.append(Box(w,h,l,color));
+    }
+    model->reset(boxes);
+}
+
+

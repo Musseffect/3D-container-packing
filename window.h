@@ -7,6 +7,7 @@
 #include <QItemSelection>
 #include <QtConcurrent/QtConcurrent>
 #include <QProgressBar>
+#include <QVector3D>
 
 namespace Ui {
 class Window;
@@ -49,6 +50,7 @@ private:
     void closeEvent(QCloseEvent* e);
     void read(const QJsonObject& json);
     void write(QJsonObject& json);
+    void generate(QVector3D max,QVector3D min,QVector3D step,int types,int quantity);
     Box getBounds();
     Ui::Window *ui;
     BoxTableModel * model;

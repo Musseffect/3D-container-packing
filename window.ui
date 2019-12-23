@@ -192,7 +192,6 @@
     <addaction name="greedy_action"/>
     <addaction name="genetic_action"/>
     <addaction name="bruteforce_action"/>
-    <addaction name="test_render_action"/>
    </widget>
    <widget class="QMenu" name="helpMenu">
     <property name="title">
