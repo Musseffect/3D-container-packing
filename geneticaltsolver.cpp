@@ -87,28 +87,28 @@ QVector<BoxInfo> GeneticAltSolver::solve(const QVector<Box> &boxes, const Box &b
                     bestVolume=value;
                     bestSolution=c;
                 }
-                for(int i=solutions.length()-1;i>=reductionIndex;i--)
+            }
+            for(int k=solutions.length()-1;k>=reductionIndex;k--)
+            {
+                if(objectiveValues[k]<0.0)
                 {
-                    if(objectiveValues[i]<0.0)
+                    Chromosome& c = solutions[k];
+                    float objectiveValue=objectiveValues[k];
+                    //Попробовать исправить
+                    c.reduction(rotateBoxes);
+                    objectiveValue=c.objectiveFunction(boxes,bounds,rotateBoxes);
+                    if(objectiveValue>=0.0)
                     {
-                        Chromosome& c = solutions[i];
-                        float objectiveValue=objectiveValues[i];
-                        //Попробовать исправить
-                        c.reduction(rotateBoxes);
-                        objectiveValue=c.objectiveFunction(boxes,bounds,rotateBoxes);
-                        if(objectiveValue>=0.0)
+                        objectiveValues[k]=objectiveValue;
+                        if(objectiveValue<bestVolume)
                         {
-                            objectiveValues[i]=objectiveValue;
-                            if(objectiveValue<bestVolume)
-                            {
-                                bestVolume=objectiveValue;
-                                bestSolution=solutions[i];
-                            }
-                            continue;
+                            bestVolume=objectiveValue;
+                            bestSolution=solutions[k];
                         }
-                        solutions.removeAt(i);
-                        objectiveValues.removeAt(i);
+                        continue;
                     }
+                    solutions.removeAt(k);
+                    objectiveValues.removeAt(k);
                 }
             }
             float currentTime=float(clock()-t)/CLOCKS_PER_SEC;
@@ -192,8 +192,9 @@ QVector<BoxInfo> GeneticAltSolver::solve(const QVector<Box> &boxes, const Box &b
         }
         //Селекция
         selection(solutions,objectiveValues,boundsVolume,selectionCount);
-        QThread::msleep(5);
 
+        reductionIndex=solutions.length();
+        QThread::msleep(5);
     }
     END:
     if(bestVolume<10e8)
@@ -238,7 +239,6 @@ float GeneticAltSolver::Chromosome::getBoxCount() const
 
 GeneticAltSolver::Chromosome::Chromosome():genes(),orientations()
 {
-
 }
 
 GeneticAltSolver::Chromosome::Chromosome(const Chromosome &b)
@@ -260,7 +260,7 @@ GeneticAltSolver::Chromosome::Chromosome(int boxCount, bool rotateBoxes)
         int index=availableIndexes[randIndex];
         qSwap(availableIndexes[randIndex],availableIndexes[boxCount-1-i]);
         genes.push_back(index);
-        orientations[i]=rotateBoxes?::orientations[Random::random(5)]:BoxOrientation::XYZ0;
+        orientations.push_back(rotateBoxes?::orientations[Random::random(5)]:BoxOrientation::XYZ0);
     }
 }
 
@@ -279,6 +279,7 @@ QVector<BoxInfo> GeneticAltSolver::Chromosome::placeBoxes(const QVector<Box> &bo
         int gene=genes[i];
         const Box& box=boxes.at(gene).getOrientation(orientations[gene]);
         float bestFit=10e8;
+        float bestDistance=10e8;
         int bestEms=-1;
         for(int j=0;j<emsList.length();j++)
         {
@@ -295,6 +296,7 @@ QVector<BoxInfo> GeneticAltSolver::Chromosome::placeBoxes(const QVector<Box> &bo
             float envelopeZ=qMax(z,maxz);
 
             float fitness;
+            float distance=x*x+y*y+z*z;
             if(box.width()>w||box.height()>h||box.length()>l)
                 continue;
             switch(strategy)
@@ -336,6 +338,12 @@ QVector<BoxInfo> GeneticAltSolver::Chromosome::placeBoxes(const QVector<Box> &bo
             if(fitness<bestFit)
             {
                 bestFit=fitness;
+                bestDistance=distance;
+                bestEms=j;
+            }else if(qAbs(fitness-bestFit)<0.001&&distance<bestDistance)
+            {
+                bestFit=fitness;
+                bestDistance=distance;
                 bestEms=j;
             }
         }
@@ -362,9 +370,9 @@ QVector<BoxInfo> GeneticAltSolver::Chromosome::placeBoxes(const QVector<Box> &bo
 
         //recompute all ems's
         QStack<emsstruct> emptyspaces;
-        for(int i=0;i<emsList.length();i++)
+        for(int p=0;p<emsList.length();p++)
         {
-            emptyspaces.push(emsList[i]);
+            emptyspaces.push(emsList[p]);
         }
         emsList.clear();
         while(emptyspaces.length()>0)
@@ -476,7 +484,7 @@ GeneticAltSolver::Chromosome crossingover(const GeneticAltSolver::Chromosome &so
         }
     }
     QVector<int> freeGenes;
-    for(int i=0;i<cuttingPoint;i++)
+    for(int i=0;i<boxCount;i++)
     {
         int gene=solution2.genes[i];
         if(genePool[gene]==true)
@@ -484,12 +492,12 @@ GeneticAltSolver::Chromosome crossingover(const GeneticAltSolver::Chromosome &so
     }
     for(int i=cuttingPoint;i<boxCount;i++)
     {
-        int gene=solution2.genes[i];
-        if(genePool[gene]==false)
+        int gene=child.genes[i];
+        if(gene==-1)
         {
-            int gene=freeGenes.last();
-            child.genes.push_back(gene);
-            freeGenes.pop_back();
+            gene=freeGenes.first();
+            child.genes[i]=gene;
+            freeGenes.pop_front();
             child.orientations[gene]=solution2.orientations[gene];
         }
     }
@@ -499,29 +507,29 @@ GeneticAltSolver::Chromosome crossingover(const GeneticAltSolver::Chromosome &so
 void GeneticAltSolver::Chromosome::mutation(bool rotateBoxes)
 {
     //switch two random positions;
-    int index1=Random::random(genes.length());
+    int index1=Random::random(genes.length()-1);
     int index2=(Random::random(genes.length()-2)+1+index1)%genes.length();
     qSwap(genes[index1],genes[index2]);
     if(rotateBoxes)
     {
-        int index=Random::random(genes.length());
+        int index=Random::random(genes.length()-1);
         orientations[index]=::orientations[orientationToInteger(orientations[index])+Random::random(4)+1];
     }
 }
 
 void GeneticAltSolver::Chromosome::reduction(bool rotateBoxes)
 {
-    int index1=Random::random(genes.length());
-    int index2=(Random::random(genes.length()-1)+index1)%genes.length();
+    int index1=Random::random(genes.length()-1);
+    int index2=(Random::random(genes.length()-2)+1+index1)%genes.length();
     qSwap(genes[index1],genes[index2]);
     if(rotateBoxes)
     {
-        int index=Random::random(genes.length());
+        int index=Random::random(genes.length()-1);
         orientations[index]=::orientations[orientationToInteger(orientations[index])+Random::random(4)+1];
     }
 }
 
-void selection(QList<GeneticAltSolver::Chromosome> &solutions, QList<float> objectiveValues, float boundsVolume, int selectionCount)
+void selection(QList<GeneticAltSolver::Chromosome> &solutions, QList<float>& objectiveValues, float boundsVolume, int selectionCount)
 {
     QVector<float> probabilities;
     float normalizationFactor=0.0f;//значение для нормализации вероятностей
@@ -559,9 +567,9 @@ float GeneticAltSolver::Chromosome::objectiveFunction(const QVector<Box> &boxes,
 {
     QList<emsstruct> emsList;
     emsList.push_back(emsstruct{0.f,0.f,0.f,bounds.w,bounds.h,bounds.l});
-    float maxx=0.0f;
-    float maxy=0.0f;
-    float maxz=0.0f;
+    float w=0.0f;
+    float h=0.0f;
+    float l=0.0f;
     for(int i=0;i<genes.length();i++)
     {
         int gene=genes[i];
@@ -632,14 +640,14 @@ float GeneticAltSolver::Chromosome::objectiveFunction(const QVector<Box> &boxes,
         emsstruct ems=emsList[bestEms];
 
         float minx=ems.minx;
-        float x=minx+box.width();
+        float maxx=minx+box.width();
         float miny=ems.miny;
-        float y=miny+box.height();
+        float maxy=miny+box.height();
         float minz=ems.minz;
-        float z=minz+box.length();
-        maxx=qMax(x,maxx);
-        maxy=qMax(y,maxy);
-        maxz=qMax(z,maxz);
+        float maxz=minz+box.length();
+        w=qMax(maxx,w);
+        h=qMax(maxy,h);
+        l=qMax(maxz,l);
 
 
         //recompute all ems's

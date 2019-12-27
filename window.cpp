@@ -449,6 +449,9 @@ void Window::generate(QVector3D max,QVector3D min,QVector3D step,int types,int q
             boxes.append(Box(w,h,l,color));
     }
     model->reset(boxes);
+    ui->widthSpinBox->setValue(20.0);
+    ui->heightSpinBox->setValue(20.0);
+    ui->lengthSpinBox->setValue(20.0);
 }
 
 void Window::on_genetic2_action_triggered()

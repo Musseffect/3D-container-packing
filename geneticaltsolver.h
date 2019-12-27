@@ -25,7 +25,6 @@ public:
         QVector<int> genes;
         QVector<BoxOrientation> orientations;
 
-
         float getBoxCount()const;
         Chromosome();
         Chromosome(const Chromosome &b);
@@ -63,6 +62,6 @@ public:
               int strategy);
     virtual QVector<BoxInfo> solve(const QVector<Box>& boxes,const Box& bounds) override;
 };
-void selection(QList<GeneticAltSolver::Chromosome>& solutions,QList<float> objectiveValues,float boundsVolume,int selectionCount);
+void selection(QList<GeneticAltSolver::Chromosome>& solutions, QList<float> &objectiveValues, float boundsVolume, int selectionCount);
 
 #endif // GENETICALTSOLVER_H
