@@ -36,7 +36,9 @@ SOURCES += main.cpp\
     greedydialog.cpp \
     solutiondialog.cpp \
     geneticdialog.cpp \
-    bruteforcedialog.cpp
+    bruteforcedialog.cpp \
+    genetic2dialog.cpp \
+    geneticaltsolver.cpp
 
 HEADERS  += window.h \
     boxscene.h \
@@ -58,13 +60,16 @@ HEADERS  += window.h \
     solutiondialog.h \
     greedydialog.h \
     geneticdialog.h \
-    bruteforcedialog.h
+    bruteforcedialog.h \
+    genetic2dialog.h \
+    geneticaltsolver.h
 
 FORMS    += window.ui \
     greedydialog.ui \
     geneticdialog.ui \
     solutiondialog.ui \
-    bruteforcedialog.ui
+    bruteforcedialog.ui \
+    genetic2dialog.ui
 
 DISTFILES += \
     Shaders/boxshader.geom \

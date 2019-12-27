@@ -1,19 +1,19 @@
-#ifndef GENETICSOLVERDIALOG_H
-#define GENETICSOLVERDIALOG_H
+#ifndef GENETIC2DIALOG_H
+#define GENETIC2DIALOG_H
 
 #include <QDialog>
 
 namespace Ui {
-class GeneticSolverDialog;
+class genetic2dialog;
 }
 
-class GeneticDialog : public QDialog
+class genetic2dialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit GeneticDialog(QWidget *parent = 0);
-    ~GeneticDialog();
+    explicit genetic2dialog(QWidget *parent = 0);
+    ~genetic2dialog();
     int getPopulation() const;
     int getSelectionCount()const;
     int getMaxIterations()const;
@@ -21,9 +21,10 @@ public:
     float getMutationProb()const;
     float getRequiredVolume()const;
     float getCrossingoverCount()const;
-    int getRepairAttempts()const;
     bool getRotateBoxesValue()const;
-    bool getCompressBoxesValue()const;
+    int getRepairAttempts()const;
+    int getStrategy()const;
+
 
 private slots:
     void on_populationSpinBox_valueChanged(int arg1);
@@ -33,7 +34,7 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
-    Ui::GeneticSolverDialog *ui;
+    Ui::genetic2dialog *ui;
 };
 
-#endif // GENETICSOLVERDIALOG_H
+#endif // GENETIC2DIALOG_H

@@ -46,6 +46,8 @@ private slots:
 
     void on_bruteforce_action_triggered();
 
+    void on_genetic2_action_triggered();
+
 private:
     void closeEvent(QCloseEvent* e);
     void read(const QJsonObject& json);

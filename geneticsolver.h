@@ -66,12 +66,12 @@ void crossingover(QList<Chromosome>& solutions, QList<float>& objectiveValues, c
                   const Box& bounds,
                   const int population,
                   const int chromosomeLength,
-                  const int boxCount, const bool tightPacking);
+                  const int boxCount);
 bool xCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 bool yCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 bool zCoordLessThan(const BoxInfo &d1, const BoxInfo &d2);
 
-float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound,const bool tightPacking);
+float objectiveFunction(const Chromosome& chromosome, const QVector<Box>& boxes, const Box& bound);
 QVector<BoxInfo> calculatePlacements(const Chromosome& chromosome,const QVector<Box>& boxes,const bool tightPacking,float&w,float&h,float&l);
 
 void recompute(QList<emsstruct>* emsList,float minx,float maxx,float miny,float maxy,float minz,float maxz);

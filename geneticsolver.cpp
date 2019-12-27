@@ -148,10 +148,9 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
     int boxCount=boxes.length();//количество ящиков
     //int operatorCount=boxCount-1;//количество операторов в записи обратной польской нотации
     int chromosomeLength=boxCount*2-1;//количество элементов в записи обратной польской нотации
-    QElapsedTimer timer;
+
     clock_t t;
     t = clock();
-    timer.start();
 
     QList<Chromosome> solutions;
     QList<float> objectiveValues;
@@ -181,7 +180,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
     {
         Chromosome c=generateGreed2(boxes,bounds,rotateBoxes);
         solutions.push_back(c);
-        float value=objectiveFunction(c,boxes,bounds,compressBoxes);
+        float value=objectiveFunction(c,boxes,bounds);
         objectiveValues.push_back(value);
         if(value>=0.0&&value<bestVolume)
         {
@@ -202,7 +201,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
                 //Chromosome c=generate(boxCount,rotateBoxes);
                 Chromosome c=generate2(boxes,bounds,rotateBoxes);
                 solutions.push_back(c);
-                float value=objectiveFunction(c,boxes,bounds,compressBoxes);
+                float value=objectiveFunction(c,boxes,bounds);
                 objectiveValues.push_back(value);
                 if(value>=0.0&&value<bestVolume)
                 {
@@ -218,7 +217,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
                     float objectiveValue=objectiveValues[i];
                     //Попробовать исправить
                     reduction(c,wProb,hProb,rotateBoxes);
-                    objectiveValue=objectiveFunction(c,boxes,bounds,compressBoxes);
+                    objectiveValue=objectiveFunction(c,boxes,bounds);
                     if(objectiveValue>=0.0)
                     {
                         objectiveValues[i]=objectiveValue;
@@ -233,8 +232,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
                     objectiveValues.removeAt(i);
                 }
             }
-            float currentTime=timer.elapsed()/10e2;
-            currentTime=float(clock()-t)/CLOCKS_PER_SEC;
+            float currentTime=float(clock()-t)/CLOCKS_PER_SEC;
             totalTime=currentTime;
             emit BoxPackingSolver::progress(qMax<int>(currentIteration*100.0f/this->maxIterations,int(totalTime*100.f/this->maxTime)));
 
@@ -250,11 +248,11 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
         //crossingover
         for(int i=0;i<crossingoverCount;i++)
         {
-            crossingover(solutions,objectiveValues,crossingoverIndexes,genePool,boxes,bounds,population,chromosomeLength,boxCount,compressBoxes);
+            crossingover(solutions,objectiveValues,crossingoverIndexes,genePool,boxes,bounds,population,chromosomeLength,boxCount);
         }
         //!!!!!!!!!!!!!!!!!!!!!
         //checkSolutions(solutions,boxCount);
-        for(int i=0;i<solutions.length();i++)
+        for(int i=0;i<population;i++)
         {
             if(Random::randomUnit()<=mutationProb)
             {
@@ -263,7 +261,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
                 mutation(c);
                 //inversion
                 inversion(c);
-                objectiveValues[i]=objectiveFunction(c,boxes,bounds,compressBoxes);
+                objectiveValues[i]=objectiveFunction(c,boxes,bounds);
             }
         }
         //!!!!!!!!!!!!!!!!!!!!!
@@ -271,8 +269,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
 
         currentIteration++;
 
-        float currentTime=timer.elapsed()/10e2;
-        currentTime=float(clock()-t)/CLOCKS_PER_SEC;
+        float currentTime=float(clock()-t)/CLOCKS_PER_SEC;
         if(currentTime>maxTime||currentIteration>=maxIterations||bestVolume<=requiredVolume*boundsVolume)
         {
             totalTime=currentTime;
@@ -294,7 +291,7 @@ QVector<BoxInfo> GeneticSolver::solve(const QVector<Box> &boxes, const Box &boun
                 {
                     reduction(c,wProb,hProb,rotateBoxes);
 
-                    objectiveValue=objectiveFunction(c,boxes,bounds,compressBoxes);
+                    objectiveValue=objectiveFunction(c,boxes,bounds);
                     if(objectiveValue>=0.0)
                     {
                         if(objectiveValue<bestVolume)
@@ -559,8 +556,7 @@ void crossingover(QList<Chromosome>& solutions,QList<float>& objectiveValues,con
                   const Box& bounds,
                   const int population,
                   const int chromosomeLength,
-                  const int boxCount,
-                  const bool tightPacking)
+                  const int boxCount)
 {
     //выбрать две хромосомы
     int index1=Random::random(population-1);
@@ -674,8 +670,8 @@ void crossingover(QList<Chromosome>& solutions,QList<float>& objectiveValues,con
         }
         solutions.push_back(child1);
         solutions.push_back(child2);
-        objectiveValues.push_back(objectiveFunction(child1,boxes,bounds,tightPacking));
-        objectiveValues.push_back(objectiveFunction(child2,boxes,bounds,tightPacking));
+        objectiveValues.push_back(objectiveFunction(child1,boxes,bounds));
+        objectiveValues.push_back(objectiveFunction(child2,boxes,bounds));
     }
 }
 
@@ -716,7 +712,7 @@ bool zCoordLessThan(const BoxInfo &d1, const BoxInfo &d2)
 
 #define ALTERNATIVE
 #ifdef ALTERNATIVE
-float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound,const bool tightPacking)
+float objectiveFunction(const Chromosome& chromosome,const QVector<Box>& boxes,const Box& bound)
 {
     struct block{float maxx;float maxy;float maxz;int left;int operation;};
     QList<block> blocks;
@@ -1240,7 +1236,6 @@ Chromosome generateGreed2(const QVector<Box>& boxes,const Box& bounds,bool rotat
             solution.genes.prepend(current.left);
         }else
         {
-           int op=current.op;
            solution.genes.prepend(current.op);
            macroblock left=tree.at(current.left);
            macroblock right=tree.at(current.left+1);
@@ -1388,7 +1383,6 @@ Chromosome generate2(const QVector<Box>& boxes,const Box bounds,bool rotateBoxes
             solution.genes.prepend(current.left);
         }else
         {
-           int op=current.op;
            solution.genes.prepend(current.op);
            macroblock left=tree.at(current.left);
            macroblock right=tree.at(current.left+1);

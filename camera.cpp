@@ -3,9 +3,9 @@
 #include <QtGlobal>
 
 
-SphericalCamera::SphericalCamera():center(0.0,0.0,0.0),distance(10.0),
-    fov(75.0),Camera(),nearPlane(0.01),farPlane(300.0),
-    pitch(0.0),yaw(0.0),maxDistance(200.0),minDistance(0.5)
+SphericalCamera::SphericalCamera():center(0.0,0.0,0.0),distance(10.0f),
+    fov(75.0f),Camera(),nearPlane(0.01f),farPlane(300.0f),
+    pitch(0.0f),yaw(0.0f),maxDistance(200.0f),minDistance(0.5f)
 {
 }
 

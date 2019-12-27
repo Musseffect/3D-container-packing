@@ -1,7 +1,7 @@
 #include "boxplacementtablemodel.h"
 
 
-BoxPlacementTableModel::BoxPlacementTableModel(QObject *parent)
+BoxPlacementTableModel::BoxPlacementTableModel(QObject *)
 {
 
 }

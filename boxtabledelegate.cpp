@@ -27,7 +27,7 @@ QWidget *BoxTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
         editor->resize(140,140);
         return editor;
     }
-    QStyledItemDelegate::createEditor(parent, option, index);
+    return QStyledItemDelegate::createEditor(parent, option, index);
    // emit sizeHintChanged(index);
 }
 void BoxTableDelegate::paint(QPainter*painter,const QStyleOptionViewItem& option,const QModelIndex& index)const
@@ -80,7 +80,7 @@ void BoxTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 }
 
 void BoxTableDelegate::updateEditorGeometry(QWidget *editor,
-    const QStyleOptionViewItem &option, const QModelIndex &index) const
+    const QStyleOptionViewItem &option, const QModelIndex &) const
 {
     editor->setGeometry(option.rect);
 }

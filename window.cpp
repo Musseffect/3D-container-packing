@@ -10,6 +10,8 @@
 #include "solverworker.h"
 #include "helpwindow.h"
 #include "boxtabledelegate.h"
+#include "genetic2dialog.h"
+#include "geneticaltsolver.h"
 
 #include <qcompilerdetection.h>
 
@@ -55,7 +57,7 @@ Window::Window(QWidget *parent) :
     //generate(QVector3D(9,9,9),QVector3D(0.5,0.5,0.5),QVector3D(0.5,0.5,0.5),20,5);
     //generate(QVector3D(9,9,9),QVector3D(0.5,0.5,0.5),QVector3D(0.5,0.5,0.5),50,4);
 }
-void Window::onSelectionChange(const QItemSelection & selected, const QItemSelection &deselected)
+void Window::onSelectionChange(const QItemSelection & , const QItemSelection &)
 {
     if(ui->tableView->selectionModel()->selection().isEmpty())
     {
@@ -87,7 +89,7 @@ void Window::on_test_render_action_triggered()
     //5 4 -2 0 6 1 3 -3 2 -1 -2 -1 -3
 
     //2, 3, -3, 4, -3, 0, 1, 5, -3, -1, 6, -2, -2  !!!! without rotations
-    QVector<int> genes=QVector<int>()<<
+   /* QVector<int> genes=QVector<int>()<<
                                         2<<
                                         3<<
                                         -3<<
@@ -128,7 +130,7 @@ void Window::on_test_render_action_triggered()
     placements=calculatePlacements(c,boxes,true,w,h,l);
     solutionWindow=new SolutionDialog(this);
     solutionWindow->show();
-    solutionWindow->setup(placements,boxes,bounds);
+    solutionWindow->setup(placements,boxes,bounds);*/
 }
 
 void Window::on_greedy_action_triggered()
@@ -449,4 +451,50 @@ void Window::generate(QVector3D max,QVector3D min,QVector3D step,int types,int q
     model->reset(boxes);
 }
 
+void Window::on_genetic2_action_triggered()
+{
+    QVector<Box> boxes=model->getBoxes().toVector();
+    Box bounds=getBounds();
+    genetic2dialog* dialog=new genetic2dialog();
+    dialog->setModal(true);
+    if(dialog->exec()==QDialog::Rejected)
+    {
+        delete dialog;
+        return;
+    }
+    progressBar->setValue(0);
+    progressBar->setVisible(true);
+    int population=dialog->getPopulation();
+    int maxIterations=dialog->getMaxIterations();
+    float maxTime=dialog->getMaxTime();
+    float requiredVolume=dialog->getRequiredVolume();
+    float mutationProb=dialog->getMutationProb();
+    int selectionCount=dialog->getSelectionCount();
+    float crossingoverCount=dialog->getCrossingoverCount();
+    bool rotateBoxes=dialog->getRotateBoxesValue();
+    int repairAttempts=dialog->getRepairAttempts();
+    int strategy=dialog->getStrategy();
+    delete dialog;
+    lockUI();
+    GeneticAltSolver* solver=new GeneticAltSolver();
+    solver->init(population,
+                maxIterations,
+                maxTime,
+                requiredVolume,
+                mutationProb,
+                selectionCount,
+                crossingoverCount,
+                repairAttempts,
+                rotateBoxes,
+                strategy);
+    connect(solver, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
 
+    SolverThread *solverThread = new SolverThread(this);
+    solverThread->init(solver,boxes,bounds);
+    connect(solverThread, &SolverThread::showSolution, this, &Window::showSolution);
+    connect(solverThread, &SolverThread::error, this, &Window::showError);
+    connect(solverThread, &SolverThread::finished, solverThread, &SolverThread::deleteLater);
+    connect(qApp, SIGNAL(aboutToQuit()), solverThread, SLOT(deleteLater()));
+
+    solverThread->start();
+}

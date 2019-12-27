@@ -192,6 +192,7 @@
     <addaction name="greedy_action"/>
     <addaction name="genetic_action"/>
     <addaction name="bruteforce_action"/>
+    <addaction name="genetic2_action"/>
    </widget>
    <widget class="QMenu" name="helpMenu">
     <property name="title">
@@ -245,6 +246,11 @@
   <action name="bruteforce_action">
    <property name="text">
     <string>Перебор</string>
+   </property>
+  </action>
+  <action name="genetic2_action">
+   <property name="text">
+    <string>Генетический алгоритм альт.</string>
    </property>
   </action>
  </widget>
