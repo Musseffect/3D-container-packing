@@ -1,15 +1,15 @@
-# Трёхмерная упаковка
+# РўСЂС‘С…РјРµСЂРЅР°СЏ СѓРїР°РєРѕРІРєР°
 
 
-Реализация алгоритмов упаковки ящиков в контейнер:
+Р РµР°Р»РёР·Р°С†РёСЏ Р°Р»РіРѕСЂРёС‚РјРѕРІ СѓРїР°РєРѕРІРєРё СЏС‰РёРєРѕРІ РІ РєРѕРЅС‚РµР№РЅРµСЂ:
 
-* генетического алгоритм из [статьи](https://cyberleninka.ru/article/n/primenenie-geneticheskogo-algoritma-resheniya-zadachi-trehmernoy-upakovki)
-* алгоритм перебора
-* жадный алгоритм с выбором критерия жадности
-* генетический алгоритм с критерием выбора места вставки
+* РіРµРЅРµС‚РёС‡РµСЃРєРѕРіРѕ Р°Р»РіРѕСЂРёС‚Рј РёР· [СЃС‚Р°С‚СЊРё](https://cyberleninka.ru/article/n/primenenie-geneticheskogo-algoritma-resheniya-zadachi-trehmernoy-upakovki)
+* Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµР±РѕСЂР°
+* Р¶Р°РґРЅС‹Р№ Р°Р»РіРѕСЂРёС‚Рј СЃ РІС‹Р±РѕСЂРѕРј РєСЂРёС‚РµСЂРёСЏ Р¶Р°РґРЅРѕСЃС‚Рё
+* РіРµРЅРµС‚РёС‡РµСЃРєРёР№ Р°Р»РіРѕСЂРёС‚Рј СЃ РєСЂРёС‚РµСЂРёРµРј РІС‹Р±РѕСЂР° РјРµСЃС‚Р° РІСЃС‚Р°РІРєРё
 
-![Screenshot](/Docs/images/screen1.png)
+![Screenshot](/docs/images/screen1.png)
 
-![Screenshot](/Docs/images/screen2.png)
+![Screenshot](/docs/images/screen2.png)
 
-![Screenshot](/Docs/images/screen3.png)
+![Screenshot](/docs/images/screen3.png)
