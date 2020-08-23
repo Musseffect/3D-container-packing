@@ -17,6 +17,18 @@ enum BoxOrientation
   ZYX5=0x0006//210
 };
 
+
+struct BoxPositionStruct
+{
+    float w;
+    float h;
+    float l;
+    QColor c;
+    float px;
+    float py;
+    float pz;
+};
+
 static BoxOrientation orientations[6]={BoxOrientation::XYZ0,BoxOrientation::XZY1,
                               BoxOrientation::YXZ2,BoxOrientation::YZX3,
                               BoxOrientation::ZXY4,BoxOrientation::ZYX5};
@@ -27,7 +39,7 @@ int orientationToInteger(BoxOrientation o);
 class Box
 {
 private:
-    //compiler doesnt hide field of an nested anonymous struct
+    //compiler doesnt hide field of a nested anonymous struct
     union{
         struct{
             float w;

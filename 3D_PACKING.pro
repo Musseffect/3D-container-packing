@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+
 QT       += core gui
 QT += opengl
 QT += help
@@ -16,60 +17,58 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        window.cpp \
-    boxscene.cpp \
-    solvers.cpp \
+        gui/window.cpp \
     camera.cpp \
     random.cpp \
-    boxtablemodel.cpp \
-    boxtabledelegate.cpp \
-    colordialogwidget.cpp \
-    greedysolver.cpp \
-    geneticsolver.cpp \
-    boxpackingsolver.cpp \
     structs.cpp \
-    boxplacementtablemodel.cpp \
-    solverworker.cpp \
-    helpwindow.cpp \
-    helpbrowser.cpp \
-    bruteforcesolver.cpp \
-    greedydialog.cpp \
-    solutiondialog.cpp \
-    geneticdialog.cpp \
-    bruteforcedialog.cpp \
-    genetic2dialog.cpp \
-    geneticaltsolver.cpp
+    solverThread.cpp \
+    boxPacking/geneticHeuristicSolver.cpp \
+    boxPacking/boxPackingSolver.cpp \
+    boxPacking/greedySolver.cpp \
+    gui/helpWindow.cpp \
+    gui/helpBrowser.cpp \
+    gui/solutionDialog.cpp \
+    sceneGLWidget.cpp \
+    gui/geneticHeuristicDialog.cpp \
+    gui/geneticRpnDialog.cpp \
+    gui/greedyDialog.cpp \
+    boxPacking/bruteForceSolver.cpp \
+    boxPacking/geneticRpnSolver.cpp \
+    gui/colorDialogWidget.cpp \
+    gui/bruteForceDialog.cpp \
+    gui/boxTableModel.cpp \
+    gui/boxTableDelegate.cpp \
+    gui/boxPositionTableModel.cpp
 
-HEADERS  += window.h \
-    boxscene.h \
-    solvers.h \
+HEADERS  += gui/window.h \
     camera.h \
     random.h \
-    boxtablemodel.h \
     structs.h \
-    boxtabledelegate.h \
-    colordialogwidget.h \
-    greedysolver.h \
-    geneticsolver.h \
-    boxpackingsolver.h \
-    boxplacementtablemodel.h \
-    solverworker.h \
-    helpwindow.h \
-    helpbrowser.h \
-    bruteforcesolver.h \
-    solutiondialog.h \
-    greedydialog.h \
-    geneticdialog.h \
-    bruteforcedialog.h \
-    genetic2dialog.h \
-    geneticaltsolver.h
+    boxPacking/bruteForceSolver.h \
+    gui/colorDialogWidget.h \
+    gui/geneticRpnDialog.h \
+    gui/boxTableModel.h \
+    gui/boxTableDelegate.h \
+    gui/boxPositionTableModel.h \
+    boxPacking/boxPackingSolver.h \
+    boxPacking/greedySolver.h \
+    gui/bruteForceDialog.h \
+    gui/greedyDialog.h \
+    gui/helpBrowser.h \
+    gui/helpWindow.h \
+    boxPacking/geneticHeuristicSolver.h \
+    sceneGLWidget.h \
+    solverThread.h \
+    gui/solutionDialog.h \
+    boxPacking/geneticRpnSolver.h \
+    gui/geneticHeuristicDialog.h
 
-FORMS    += window.ui \
-    greedydialog.ui \
-    geneticdialog.ui \
-    solutiondialog.ui \
-    bruteforcedialog.ui \
-    genetic2dialog.ui
+FORMS    += gui/window.ui \
+    gui/bruteForceDialog.ui \
+    gui/geneticHeuristicDialog.ui \
+    gui/geneticRpnDialog.ui \
+    gui/greedyDialog.ui \
+    gui/solutionDialog.ui
 
 DISTFILES += \
     Shaders/boxshader.geom \

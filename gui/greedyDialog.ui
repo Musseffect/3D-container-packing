@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GreedySolverDialog</class>
+ <widget class="QDialog" name="GreedySolverDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>357</width>
+    <height>155</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Параметры жадного алгоритма</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <item row="2" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <layout class="QFormLayout" name="formLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <property name="rowWrapPolicy">
+      <enum>QFormLayout::WrapAllRows</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Критерий жадности, минимум</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="criteria">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <item>
+        <property name="text">
+         <string>L2-норма края AABB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L1-норма края AABB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L∞-норма края AABB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Объём AABB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L2-норма края текущего блока</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L1-норма края текущего блока</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>L∞-норма края текущего блока</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Макс. по объёму блок на мин. позиции</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Наиболее плотная сторона</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Наименее плотная сторона</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Площадь поверхности AABB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Незанятый объём</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="rotateBoxes">
+       <property name="text">
+        <string>Поворачивать блоки</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>GreedySolverDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>GreedySolverDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
